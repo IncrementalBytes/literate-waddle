@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="team_list_entries">
+    <item>Atlanta United FC</item>
+    <item>Chicago Fire</item>
+    <item>Columbus Crew SC</item>
+    <item>Colorado Rapids</item>
+    <item>FC Dallas</item>
+    <item>D.C. United</item>
+    <item>Houston Dynamo</item>
+    <item>LA Galaxy</item>
+    <item>Los Angeles Football Club</item>
+    <item>Minnesota United FC</item>
+    <item>Montreal Impact</item>
+    <item>New England Revolution</item>
+    <item>New York Red Bulls</item>
+    <item>New York City FC</item>
+    <item>Orlando City SC</item>
+    <item>Philadelphia Union</item>
+    <item>Portland Timbers</item>
+    <item>Real Salt Lake</item>
+    <item>Seattle Sounders FC</item>
+    <item>San Jose Earthquakes</item>
+    <item>Sporting Kansas City</item>
+    <item>Toronto FC</item>
+    <item>Vancouver Whitecaps FC</item>
+  </string-array>
+  <string-array name="team_list_values">
+    <item>Atlanta United FC,ATL</item>
+    <item>Chicago Fire,CHI</item>
+    <item>Columbus Crew SC,CLB</item>
+    <item>Colorado Rapids,COL</item>
+    <item>FC Dallas,DAL</item>
+    <item>D.C. United,DC</item>
+    <item>Houston Dynamo,HOU</item>
+    <item>LA Galaxy,LA</item>
+    <item>Los Angeles Football Club,LAFC</item>
+    <item>Minnesota United FC,MIN</item>
+    <item>Montreal Impact,MON</item>
+    <item>New England Revolution,NE</item>
+    <item>New York Red Bulls,RBNY</item>
+    <item>New York City FC,NYC</item>
+    <item>Orlando City SC,ORL</item>
+    <item>Philadelphia Union,PHI</item>
+    <item>Portland Timbers,POR</item>
+    <item>Real Salt Lake,RSL</item>
+    <item>Seattle Sounders FC,SEA</item>
+    <item>San Jose Earthquakes,SJ</item>
+    <item>Sporting Kansas City,SKC</item>
+    <item>Toronto FC,TOR</item>
+    <item>Vancouver Whitecaps FC,VAN</item>
+  </string-array>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <ListPreference
+    android:key="preference_list_team"
+    android:title="Team"
+    android:summary="@string/preferences_team"
+    android:defaultValue="@string/none"
+    android:entries="@array/team_list_entries"
+    android:entryValues="@array/team_list_values"/>
+
+  <ListPreference
+    android:key="preference_list_season"
+    android:title="Season"
+    android:summary="@string/preferences_season"
+    android:defaultValue="@string/none"
+    android:entries="@array/season_list_entries"
+    android:entryValues="@array/season_list_values"/>
+
+</PreferenceScreen>

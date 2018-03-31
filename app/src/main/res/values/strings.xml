@@ -1,0 +1,29 @@
+<resources>
+  <string name="app_name">TrendFeeder</string>
+  <string name="action_settings">Settings</string>
+  <string name="desc_locked">App requires authentication before continuing</string>
+  <string name="preferences_team">Select the team you wish to view trends for.</string>
+  <string name="preferences_season">Select the season to view trends for.</string>
+  <string name="none">None</string>
+  <string name="status_authenticating">Authenticating…</string>
+  <string name="placeholder">TBD</string>
+  <string name="full_time">FT</string>
+  <string name="in_progress">In progress</string>
+  <string name="no_matches">No data, change Team and/or Season via Preferences.</string>
+  <string name="home">Home:</string>
+  <string name="away">Away:</string>
+  <string name="date">Date:</string>
+  <string name="create">Create</string>
+  <string name="err_missing_home_selection">Please select a home team.</string>
+  <string name="err_missing_away_selection">Please select an away team.</string>
+  <string name="err_same_selection">Home and Away teams must be different.</string>
+  <string name="update">Update</string>
+  <string name="is_final">Is Final?</string>
+  <string name="err_no_away_score">Missing score for away team.</string>
+  <string name="err_no_home_score">Missing score for home team.</string>
+  <plurals name="subtitle">
+    <item quantity="one">%s - %d match</item>
+    <item quantity="other">%s - %d matches</item>
+  </plurals>
+  <string name="generating_trends">Generating Trends…</string>
+</resources>
