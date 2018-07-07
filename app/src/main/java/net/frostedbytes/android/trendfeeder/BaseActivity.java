@@ -3,7 +3,8 @@ package net.frostedbytes.android.trendfeeder;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class BaseActivity extends AppCompatActivity {
@@ -25,10 +26,10 @@ public class BaseActivity extends AppCompatActivity {
     super.onCreate(saved);
 
     LogUtils.debug(TAG, "++onCreate(Bundle)");
-    if (BuildConfig.DEBUG) {
-      FirebaseCrash.setCrashCollectionEnabled(false);
+    if (!BuildConfig.DEBUG) {
+      Fabric.with(this, new Crashlytics());
     } else {
-      FirebaseCrash.setCrashCollectionEnabled(true);
+      LogUtils.debug(TAG, "Skipping Crashlytics setup; debug build.");
     }
   }
 

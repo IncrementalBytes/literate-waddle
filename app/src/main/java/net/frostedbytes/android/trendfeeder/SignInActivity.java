@@ -89,7 +89,12 @@ public class SignInActivity extends BaseActivity implements OnClickListener {
       GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
       if (result.isSuccess()) {
         GoogleSignInAccount account = result.getSignInAccount();
-        firebaseAuthenticateWithGoogle(account);
+        if (account != null) {
+          firebaseAuthenticateWithGoogle(account);
+        } else {
+          LogUtils.error(TAG, "Unable to retrieve sign-in account.");
+          Snackbar.make(findViewById(R.id.activity_sign_in), "Sign-in account failed.", Snackbar.LENGTH_SHORT).show();
+        }
       } else {
         LogUtils.error(TAG, "Getting task result failed.", result.getStatus());
         Snackbar.make(findViewById(R.id.activity_sign_in), "Could not sign-in with Google.", Snackbar.LENGTH_SHORT).show();
@@ -105,7 +110,13 @@ public class SignInActivity extends BaseActivity implements OnClickListener {
     mAuth.signInWithCredential(credential)
       .addOnCompleteListener(this, task -> {
         if (task.isSuccessful()) {
-          onAuthenticateSuccess(mAuth.getCurrentUser());
+          FirebaseUser user = mAuth.getCurrentUser();
+          if (user != null) {
+            onAuthenticateSuccess(user);
+          } else {
+            LogUtils.error(TAG, "Get current user failed.");
+            Snackbar.make(findViewById(R.id.activity_sign_in), "Could not get user information.", Snackbar.LENGTH_SHORT).show();
+          }
         } else {
           LogUtils.error(
             TAG,

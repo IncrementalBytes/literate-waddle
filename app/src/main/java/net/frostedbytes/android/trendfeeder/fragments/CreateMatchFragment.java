@@ -112,7 +112,7 @@ public class CreateMatchFragment extends Fragment {
           mMatchSummaryQuery = FirebaseDatabase.getInstance().getReference().child(queryPath).orderByChild("MatchDay");
           mValueEventListener = new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
               int year = Integer.parseInt(mYearText.getText().toString());
               int month = Integer.parseInt(mMonthText.getText().toString());
@@ -151,8 +151,9 @@ public class CreateMatchFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+              LogUtils.debug(TAG, "++onCancelled(DatabaseError)");
             }
           };
           mMatchSummaryQuery.addValueEventListener(mValueEventListener);
@@ -200,6 +201,7 @@ public class CreateMatchFragment extends Fragment {
 
   private void updateUI() {
 
+    LogUtils.debug(TAG, "++updateUI()");
     if (mUserPreference != null) {
       mYearText.setText(String.format(Locale.ENGLISH, "%1d", mUserPreference.Season));
     }

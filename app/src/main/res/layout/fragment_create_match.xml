@@ -61,6 +61,7 @@
     android:layout_margin="@dimen/default_view_margin"
     android:ems="3"
     android:inputType="number"
+    android:hint="@string/hint_month_of_match"
     android:textAlignment="center"
     app:layout_constraintStart_toStartOf="@+id/create_guideline"
     app:layout_constraintTop_toBottomOf="@+id/create_spinner_away"/>
@@ -71,6 +72,7 @@
     android:layout_margin="@dimen/default_view_margin"
     android:ems="3"
     android:inputType="number"
+    android:hint="@string/hint_day_of_match"
     android:textAlignment="center"
     app:layout_constraintStart_toEndOf="@+id/create_edit_month"
     app:layout_constraintTop_toBottomOf="@+id/create_spinner_away"/>
@@ -80,8 +82,9 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/default_view_margin"
     android:ems="6"
+    android:inputType="number"
     android:textAlignment="center"
-    android:labelFor="@id/create_text_date"
+    android:hint="@string/hint_year_of_match"
     app:layout_constraintStart_toEndOf="@+id/create_edit_day"
     app:layout_constraintTop_toBottomOf="@+id/create_spinner_away"/>
   <TextView

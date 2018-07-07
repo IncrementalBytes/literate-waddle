@@ -22,6 +22,7 @@
     android:layout_margin="8dp"
     android:ems="5"
     android:inputType="number"
+    android:hint="@string/hint_score_home"
     android:textAlignment="center"
     app:layout_constraintStart_toEndOf="@+id/details_guideline"
     app:layout_constraintTop_toTopOf="parent"/>
@@ -43,6 +44,7 @@
     android:layout_marginStart="8dp"
     android:ems="5"
     android:inputType="number"
+    android:hint="@string/hint_away_score"
     android:textAlignment="center"
     app:layout_constraintStart_toEndOf="@+id/details_guideline"
     app:layout_constraintTop_toBottomOf="@id/details_edit_home_score"/>

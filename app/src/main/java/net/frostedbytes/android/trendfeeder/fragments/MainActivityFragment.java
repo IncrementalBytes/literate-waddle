@@ -92,7 +92,7 @@ public class MainActivityFragment extends Fragment {
       mMatchSummaryQuery = FirebaseDatabase.getInstance().getReference().child(queryPath).orderByChild("MatchDay");
       mValueEventListener = new ValueEventListener() {
         @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
           mMatchSummaries = new ArrayList<>();
           for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -107,7 +107,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        public void onCancelled(DatabaseError databaseError) {
+        public void onCancelled(@NonNull DatabaseError databaseError) {
 
           LogUtils.debug(TAG, "++onCancelled(DatabaseError");
           LogUtils.error(TAG, databaseError.getMessage());

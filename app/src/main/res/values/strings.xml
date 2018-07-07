@@ -26,4 +26,9 @@
     <item quantity="other">%s - %d matches</item>
   </plurals>
   <string name="generating_trends">Generating Trends…</string>
+  <string name="hint_month_of_match">Month of match</string>
+  <string name="hint_day_of_match">Day of match</string>
+  <string name="hint_year_of_match">Year of match</string>
+  <string name="hint_away_score">Score for away team</string>
+  <string name="hint_score_home">Score for home team</string>
 </resources>

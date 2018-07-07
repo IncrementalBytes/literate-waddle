@@ -1,13 +1,10 @@
 package net.frostedbytes.android.trendfeeder.utils;
 
 import android.util.Log;
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 import java.util.Locale;
 import net.frostedbytes.android.trendfeeder.BuildConfig;
 
-/**
- * Wrapper class for logging to help remove from non-debug builds.
- */
 public class LogUtils {
 
   public static void debug(final String tag, String message) {
@@ -32,7 +29,7 @@ public class LogUtils {
     if (BuildConfig.DEBUG) {
       Log.e(tag, String.format(Locale.ENGLISH, messageFormat, args));
     } else {
-      FirebaseCrash.log(String.format(Locale.ENGLISH, messageFormat, args));
+      Crashlytics.log(String.format(Locale.ENGLISH, messageFormat, args));
     }
   }
 

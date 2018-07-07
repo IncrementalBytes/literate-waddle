@@ -3,6 +3,7 @@ package net.frostedbytes.android.trendfeeder;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -132,8 +133,9 @@ public class MainActivity extends BaseActivity implements
           }
 
           @Override
-          public void onCancelled(DatabaseError databaseError) {
+          public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            LogUtils.debug(TAG, "++onCancelled(DatabaseError)");
           }
         };
         matchSummaryQuery.addValueEventListener(valueEventListener);
@@ -214,6 +216,7 @@ public class MainActivity extends BaseActivity implements
     Map<String, Long> goalDifferentialMap = new HashMap<>();
     Map<String, Long> totalPointsMap = new HashMap<>();
     Map<String, Double> pointsPerGameMap = new HashMap<>();
+    Map<String, Long> maxPointsPossibleMap = new HashMap<>();
 
     long goalsAgainst;
     long goalDifferential;
@@ -223,9 +226,9 @@ public class MainActivity extends BaseActivity implements
     long prevGoalDifferential = 0;
     long prevGoalFor = 0;
     long prevTotalPoints = 0;
+    long matchesRemaining = 34;
     for (MatchSummary summary : mMatchSummaries) {
-      if (summary.HomeTeamName.equals(mUserPreference.TeamFullName)) {
-        // targetTeam is the home team
+      if (summary.HomeTeamName.equals(mUserPreference.TeamFullName)) { // targetTeam is the home team
         goalsAgainst = summary.AwayScore;
         goalDifferential = summary.HomeScore - summary.AwayScore;
         goalsFor = summary.HomeScore;
@@ -236,8 +239,7 @@ public class MainActivity extends BaseActivity implements
         } else {
           totalPoints = (long) 1;
         }
-      } else {
-        // targetTeam is the away team
+      } else { // targetTeam is the away team
         goalsAgainst = summary.HomeScore;
         goalDifferential = summary.AwayScore - summary.HomeScore;
         goalsFor = summary.AwayScore;
@@ -255,6 +257,7 @@ public class MainActivity extends BaseActivity implements
       goalDifferentialMap.put(key, goalDifferential + prevGoalDifferential);
       goalsForMap.put(key, goalsFor + prevGoalFor);
       totalPointsMap.put(key, totalPoints + prevTotalPoints);
+      maxPointsPossibleMap.put(key, (totalPoints + prevTotalPoints) + (--matchesRemaining * 3));
 
       double result = (double) totalPoints + prevTotalPoints;
       if (result > 0) {
@@ -275,6 +278,7 @@ public class MainActivity extends BaseActivity implements
     mappedTrends.put("GoalsFor", goalsForMap);
     mappedTrends.put("TotalPoints", totalPointsMap);
     mappedTrends.put("PointsPerGame", pointsPerGameMap);
+    mappedTrends.put("MaxPointsPossible", maxPointsPossibleMap);
 
     String queryPath = PathUtils.combine(Trend.ROOT, mUserPreference.Season, mUserPreference.TeamShortName);
     Map<String, Object> childUpdates = new HashMap<>();
