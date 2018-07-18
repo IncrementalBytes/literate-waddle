@@ -26,9 +26,12 @@
     <item quantity="other">%s - %d matches</item>
   </plurals>
   <string name="generating_trends">Generating Trends…</string>
-  <string name="hint_month_of_match">Month of match</string>
-  <string name="hint_day_of_match">Day of match</string>
-  <string name="hint_year_of_match">Year of match</string>
+  <string name="hint_month_of_match">Month</string>
+  <string name="hint_day_of_match">Day</string>
+  <string name="hint_year_of_match">Year</string>
   <string name="hint_away_score">Score for away team</string>
   <string name="hint_score_home">Score for home team</string>
+  <string name="err_match_not_created">Failed to create match. Permissions?</string>
+  <string name="err_trends_not_created">Failed to generate trends. Permissions?</string>
+  <string name="err_match_not_updated">Could not update match details. Permissions?</string>
 </resources>

@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import net.frostedbytes.android.trendfeeder.BaseActivity;
@@ -103,6 +104,7 @@ public class MainActivityFragment extends Fragment {
             }
           }
 
+          Collections.reverse(mMatchSummaries);
           updateUI();
         }
 
@@ -159,8 +161,8 @@ public class MainActivityFragment extends Fragment {
 
   private void updateUI() {
 
+    LogUtils.debug(TAG, "++updateUI()");
     if (mMatchSummaries != null && mMatchSummaries.size() > 0) {
-      LogUtils.debug(TAG, "++updateUI()");
       MatchSummaryAdapter matchAdapter = new MatchSummaryAdapter(mMatchSummaries);
       mRecyclerView.setAdapter(matchAdapter);
       matchAdapter.notifyDataSetChanged();

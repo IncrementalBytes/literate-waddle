@@ -97,7 +97,15 @@ public class MainActivity extends BaseActivity implements
     LogUtils.debug(TAG, "++onMatchCreated(MatchSummary)");
     if (matchSummary != null) {
       String queryPath = PathUtils.combine(MatchSummary.ROOT, mUserPreference.Season, mUserPreference.TeamShortName);
-      FirebaseDatabase.getInstance().getReference().child(queryPath).child(matchSummary.MatchId).setValue(matchSummary.toMap());
+      FirebaseDatabase.getInstance().getReference().child(queryPath).child(matchSummary.MatchId).setValue(
+        matchSummary.toMap(),
+        (databaseError, databaseReference) -> {
+
+          if (databaseError != null && databaseError.getCode() < 0) {
+            LogUtils.error(TAG, "Could not create match: %s", databaseError.getMessage());
+            Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_match_not_created), Snackbar.LENGTH_LONG).show();
+          }
+        });
     }
 
     replaceFragment(MainActivityFragment.newInstance(mUserPreference));
@@ -129,6 +137,7 @@ public class MainActivity extends BaseActivity implements
               }
             }
 
+            // keep list in ascending order by date
             generateTrends();
           }
 
@@ -207,6 +216,13 @@ public class MainActivity extends BaseActivity implements
     replaceFragment(MatchDetailsFragment.newInstance(mUserPreference, matchSummary));
   }
 
+  @Override
+  public void onMatchUpdateFailed() {
+
+    LogUtils.debug(TAG, "++onMatchUpdateFailed()");
+    Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_match_not_updated), Snackbar.LENGTH_LONG).show();
+  }
+
   private void generateTrends() {
 
     LogUtils.debug(TAG, "++generateTrends()");
@@ -217,6 +233,7 @@ public class MainActivity extends BaseActivity implements
     Map<String, Long> totalPointsMap = new HashMap<>();
     Map<String, Double> pointsPerGameMap = new HashMap<>();
     Map<String, Long> maxPointsPossibleMap = new HashMap<>();
+    Map<String, Long> pointsByAverageMap = new HashMap<>();
 
     long goalsAgainst;
     long goalDifferential;
@@ -226,7 +243,8 @@ public class MainActivity extends BaseActivity implements
     long prevGoalDifferential = 0;
     long prevGoalFor = 0;
     long prevTotalPoints = 0;
-    long matchesRemaining = 34;
+    long totalMatches = 34;
+    long matchesRemaining = totalMatches;
     for (MatchSummary summary : mMatchSummaries) {
       if (summary.HomeTeamName.equals(mUserPreference.TeamFullName)) { // targetTeam is the home team
         goalsAgainst = summary.AwayScore;
@@ -265,6 +283,7 @@ public class MainActivity extends BaseActivity implements
       }
 
       pointsPerGameMap.put(key, result);
+      pointsByAverageMap.put(key, (long) (result * totalMatches));
 
       // update previous values for next pass
       prevGoalAgainst = goalsAgainst + prevGoalAgainst;
@@ -279,11 +298,20 @@ public class MainActivity extends BaseActivity implements
     mappedTrends.put("TotalPoints", totalPointsMap);
     mappedTrends.put("PointsPerGame", pointsPerGameMap);
     mappedTrends.put("MaxPointsPossible", maxPointsPossibleMap);
+    mappedTrends.put("PointsByAverage", pointsByAverageMap);
 
     String queryPath = PathUtils.combine(Trend.ROOT, mUserPreference.Season, mUserPreference.TeamShortName);
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put(queryPath, mappedTrends);
-    FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates);
+    FirebaseDatabase.getInstance().getReference().updateChildren(
+      childUpdates,
+      (databaseError, databaseReference) -> {
+
+        if (databaseError != null && databaseError.getCode() < 0) {
+          LogUtils.error(TAG, "Could not generate trends: %s", databaseError.getMessage());
+          Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_trends_not_created), Snackbar.LENGTH_LONG).show();
+        }
+      });
 
     hideProgressDialog();
   }

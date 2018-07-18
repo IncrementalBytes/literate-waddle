@@ -29,6 +29,7 @@ public class MatchDetailsFragment  extends Fragment {
   public interface OnMatchDetailsListener {
 
     void onMatchUpdated(MatchSummary matchSummary);
+    void onMatchUpdateFailed();
   }
 
   private OnMatchDetailsListener mCallback;
@@ -101,8 +102,15 @@ public class MatchDetailsFragment  extends Fragment {
           String queryPath = PathUtils.combine(MatchSummary.ROOT, mUserPreference.Season, mUserPreference.TeamShortName, updatedSummary.MatchId);
           Map<String, Object> childUpdates = new HashMap<>();
           childUpdates.put(queryPath, updatedSummary.toMap());
-          FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates);
-          mCallback.onMatchUpdated(updatedSummary);
+          FirebaseDatabase.getInstance().getReference().updateChildren(
+            childUpdates,
+            (databaseError, databaseReference) -> {
+
+              if (databaseError != null && databaseError.getCode() < 0) {
+                LogUtils.error(TAG, "Could not updated match: %s", databaseError.getMessage());
+                mCallback.onMatchUpdateFailed();
+              }
+            });
         }
       }
     });
