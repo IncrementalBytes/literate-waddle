@@ -156,6 +156,13 @@ public class MainActivity extends BaseActivity implements
   }
 
   @Override
+  public void onMatchUpdateFailed() {
+
+    LogUtils.debug(TAG, "++onMatchUpdateFailed()");
+    Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_match_not_updated), Snackbar.LENGTH_LONG).show();
+  }
+
+  @Override
   public boolean onOptionsItemSelected(MenuItem item) {
 
     switch (item.getItemId()) {
@@ -214,13 +221,6 @@ public class MainActivity extends BaseActivity implements
     LogUtils.debug(TAG, "++onSelected(MatchSummary)");
     setTitle("Match Details");
     replaceFragment(MatchDetailsFragment.newInstance(mUserPreference, matchSummary));
-  }
-
-  @Override
-  public void onMatchUpdateFailed() {
-
-    LogUtils.debug(TAG, "++onMatchUpdateFailed()");
-    Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_match_not_updated), Snackbar.LENGTH_LONG).show();
   }
 
   private void generateTrends() {

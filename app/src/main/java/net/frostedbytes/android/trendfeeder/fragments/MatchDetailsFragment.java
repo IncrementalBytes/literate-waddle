@@ -109,6 +109,11 @@ public class MatchDetailsFragment  extends Fragment {
               if (databaseError != null && databaseError.getCode() < 0) {
                 LogUtils.error(TAG, "Could not updated match: %s", databaseError.getMessage());
                 mCallback.onMatchUpdateFailed();
+              } else if (databaseError == null){
+                mCallback.onMatchUpdated(updatedSummary);
+              } else {
+                LogUtils.error(TAG, "Update failed with unexpected error: %d", databaseError.getCode());
+                mCallback.onMatchUpdateFailed();
               }
             });
         }

@@ -34,4 +34,6 @@
   <string name="err_match_not_created">Failed to create match. Permissions?</string>
   <string name="err_trends_not_created">Failed to generate trends. Permissions?</string>
   <string name="err_match_not_updated">Could not update match details. Permissions?</string>
+  <string name="desc_add_match">Click to add a match</string>
+  <string name="desc_matches_list">List of matches</string>
 </resources>
