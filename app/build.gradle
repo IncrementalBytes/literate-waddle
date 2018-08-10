@@ -11,8 +11,8 @@ android {
         applicationId "net.frostedbytes.android.trendfeeder"
         minSdkVersion 24
         targetSdkVersion 27
-        versionCode 5
-        versionName "1.005"
+        versionCode 6
+        versionName "1.006"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     android.applicationVariants.all { variant ->

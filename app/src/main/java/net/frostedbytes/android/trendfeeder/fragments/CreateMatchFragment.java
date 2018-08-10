@@ -12,13 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -26,9 +20,9 @@ import java.util.UUID;
 import net.frostedbytes.android.trendfeeder.BaseActivity;
 import net.frostedbytes.android.trendfeeder.R;
 import net.frostedbytes.android.trendfeeder.models.MatchSummary;
+import net.frostedbytes.android.trendfeeder.models.Team;
 import net.frostedbytes.android.trendfeeder.models.UserPreference;
 import net.frostedbytes.android.trendfeeder.utils.LogUtils;
-import net.frostedbytes.android.trendfeeder.utils.PathUtils;
 
 public class CreateMatchFragment extends Fragment {
 
@@ -48,17 +42,18 @@ public class CreateMatchFragment extends Fragment {
   private EditText mYearText;
   private TextView mErrorMessageText;
 
+  private ArrayList<MatchSummary> mMatchSummaries;
+  private ArrayList<Team> mTeams;
   private UserPreference mUserPreference;
 
-  private Query mMatchSummaryQuery;
-  private ValueEventListener mValueEventListener;
-
-  public static CreateMatchFragment newInstance(UserPreference userPreference) {
+  public static CreateMatchFragment newInstance(UserPreference userPreference, ArrayList<Team> teams, ArrayList<MatchSummary> matchSummaries) {
 
     LogUtils.debug(TAG, "++newInstance(UserPreference)");
     CreateMatchFragment fragment = new CreateMatchFragment();
     Bundle args = new Bundle();
     args.putSerializable(BaseActivity.ARG_USER_PREFERENCE, userPreference);
+    args.putParcelableArrayList(BaseActivity.ARG_TEAMS, teams);
+    args.putParcelableArrayList(BaseActivity.ARG_MATCH_SUMMARIES, matchSummaries);
     fragment.setArguments(args);
     return fragment;
   }
@@ -83,18 +78,7 @@ public class CreateMatchFragment extends Fragment {
     mYearText = view.findViewById(R.id.create_edit_year);
     mErrorMessageText = view.findViewById(R.id.create_text_error);
 
-    String[] teamItems = getResources().getStringArray(R.array.team_list_entries);
-    List<String> teams = Arrays.asList(teamItems);
-    Collections.sort(teams);
-
-    // get a list of teams for the object adapter used by the spinner controls
-    if (getActivity() != null) {
-      ArrayAdapter<String> teamsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<>(teams));
-      teamsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-      mHomeSpinner.setAdapter(teamsAdapter);
-      mAwaySpinner.setAdapter(teamsAdapter);
-    }
-
+    populateSpinners();
     Button createMatch = view.findViewById(R.id.create_button_create);
     createMatch.setOnClickListener(buttonView -> {
 
@@ -106,59 +90,35 @@ public class CreateMatchFragment extends Fragment {
         mErrorMessageText.setText(R.string.err_same_selection);
       } else {
         mErrorMessageText.setText("");
-        if (mUserPreference != null && !mUserPreference.TeamShortName.isEmpty()) {
-          String queryPath = PathUtils.combine(MatchSummary.ROOT, mUserPreference.Season, mUserPreference.TeamShortName);
-          LogUtils.debug(TAG, "Query: %s", queryPath);
-          mMatchSummaryQuery = FirebaseDatabase.getInstance().getReference().child(queryPath).orderByChild("MatchDay");
-          mValueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        int year = Integer.parseInt(mYearText.getText().toString());
+        int month = Integer.parseInt(mMonthText.getText().toString());
+        int day = Integer.parseInt(mDayText.getText().toString());
+        int matchDay = 1;
+        String matchDate = String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day);
+        String home = mHomeSpinner.getSelectedItem().toString();
+        String away = mAwaySpinner.getSelectedItem().toString();
+        boolean found = false;
+        for (MatchSummary matchSummary : mMatchSummaries) {
+          String awayName = getTeamName(matchSummary.AwayId);
+          String homeName = getTeamName(matchSummary.HomeId);
+          if (awayName.equals(away) && homeName.equals(home) && matchSummary.MatchDate.equals(matchDate)) {
+            LogUtils.debug(TAG, "Match already exists.");
+            mCallback.onMatchCreated(null);
+            found = true;
+            break;
+          } else {
+            matchDay++;
+          }
+        }
 
-              int year = Integer.parseInt(mYearText.getText().toString());
-              int month = Integer.parseInt(mMonthText.getText().toString());
-              int day = Integer.parseInt(mDayText.getText().toString());
-              int matchDay = 1;
-              String matchDate = String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day);
-              String home = mHomeSpinner.getSelectedItem().toString();
-              String away = mAwaySpinner.getSelectedItem().toString();
-              boolean found = false;
-              for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                MatchSummary matchSummary = snapshot.getValue(MatchSummary.class);
-                if (matchSummary != null) {
-                  if (matchSummary.AwayTeamName.equals(away) &&
-                    matchSummary.HomeTeamName.equals(home) &&
-                    matchSummary.MatchDate.equals(matchDate)) {
-
-                    LogUtils.debug(TAG, "Match already exists.");
-                    mCallback.onMatchCreated(null);
-                    found = true;
-                    break;
-                  } else {
-                    matchDay++;
-                  }
-                }
-              }
-
-              if (!found) {
-                MatchSummary summary = new MatchSummary();
-                summary.MatchDate = matchDate;
-                summary.AwayTeamName = away;
-                summary.HomeTeamName = home;
-                summary.MatchId = UUID.randomUUID().toString();
-                summary.MatchDay = matchDay;
-                mCallback.onMatchCreated(summary);
-              }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-              LogUtils.debug(TAG, "++onCancelled(DatabaseError)");
-            }
-          };
-          mMatchSummaryQuery.addValueEventListener(mValueEventListener);
-        } else {
-          LogUtils.warn(TAG, "User preferences were incomplete.");
+        if (!found) {
+          MatchSummary summary = new MatchSummary();
+          summary.MatchDate = matchDate;
+          summary.AwayId = getTeamId(away);
+          summary.HomeId = getTeamId(home);
+          summary.MatchId = UUID.randomUUID().toString();
+          summary.MatchDay = matchDay;
+          mCallback.onMatchCreated(summary);
         }
       }
     });
@@ -179,15 +139,13 @@ public class CreateMatchFragment extends Fragment {
       throw new ClassCastException(
         String.format(Locale.ENGLISH, "%s must implement onPopulated(int) and onSelected(String).", context.toString()));
     }
-  }
 
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-
-    LogUtils.debug(TAG, "++onDestroy()");
-    if (mMatchSummaryQuery != null && mValueEventListener != null) {
-      mMatchSummaryQuery.removeEventListener(mValueEventListener);
+    Bundle arguments = getArguments();
+    if (arguments != null) {
+      mMatchSummaries = arguments.getParcelableArrayList(BaseActivity.ARG_MATCH_SUMMARIES);
+      mTeams = arguments.getParcelableArrayList(BaseActivity.ARG_TEAMS);
+    } else {
+      LogUtils.error(TAG, "Arguments were null.");
     }
   }
 
@@ -197,6 +155,48 @@ public class CreateMatchFragment extends Fragment {
 
     LogUtils.debug(TAG, "++onResume()");
     updateUI();
+  }
+
+  private String getTeamId(String fullName) {
+
+    for(Team team : mTeams) {
+      if (team.FullName.equals(fullName)) {
+        return team.Id;
+      }
+    }
+
+    LogUtils.warn(TAG, "Did not find Id for %s", fullName);
+    return BaseActivity.DEFAULT_ID;
+  }
+
+  private String getTeamName(String teamId) {
+
+    for (Team team : mTeams) {
+      if (team.Id.equals(teamId)) {
+        return team.FullName;
+      }
+    }
+
+    LogUtils.warn(TAG, "Did not find name for %s", teamId);
+    return "N/A";
+  }
+
+  private void populateSpinners() {
+
+    List<String> teams = new ArrayList<>();
+    for (Team team : mTeams) {
+      teams.add(team.FullName);
+    }
+
+    Collections.sort(teams);
+
+    // get a list of teams for the object adapter used by the spinner controls
+    if (getActivity() != null) {
+      ArrayAdapter<String> teamsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<>(teams));
+      teamsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+      mHomeSpinner.setAdapter(teamsAdapter);
+      mAwaySpinner.setAdapter(teamsAdapter);
+    }
   }
 
   private void updateUI() {

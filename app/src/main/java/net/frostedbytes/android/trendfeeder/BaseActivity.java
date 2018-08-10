@@ -10,7 +10,9 @@ import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 public class BaseActivity extends AppCompatActivity {
 
   public static final String ARG_EMAIL = "email";
+  public static final String ARG_MATCH_SUMMARIES = "match_summaries";
   public static final String ARG_MATCH_SUMMARY = "match_summary";
+  public static final String ARG_TEAMS = "teams";
   public static final String ARG_USER_ID = "user_id";
   public static final String ARG_USER_NAME = "user_name";
   public static final String ARG_USER_PREFERENCE = "user_preference";

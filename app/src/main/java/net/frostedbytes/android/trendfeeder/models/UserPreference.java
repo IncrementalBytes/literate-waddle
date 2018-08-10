@@ -3,7 +3,6 @@ package net.frostedbytes.android.trendfeeder.models;
 import com.google.firebase.database.Exclude;
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Locale;
 import net.frostedbytes.android.trendfeeder.BaseActivity;
 import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
@@ -17,14 +16,9 @@ public class UserPreference implements Serializable {
   public int Compare;
 
   /**
-   * Full name of team.
+   * Unique identifier for team.
    */
-  public String TeamFullName;
-
-  /**
-   * Short name of team.
-   */
-  public String TeamShortName;
+  public String TeamId;
 
   /**
    * Unique identifier of user.
@@ -45,9 +39,8 @@ public class UserPreference implements Serializable {
 
     // Default constructor required for calls to DataSnapshot.getValue(Settings.class)
     this.Compare = 0;
+    this.TeamId = BaseActivity.DEFAULT_ID;
     this.UserId = BaseActivity.DEFAULT_ID;
-    this.TeamFullName = "";
-    this.TeamShortName = "";
     this.Season = Calendar.getInstance().get(Calendar.YEAR);
   }
 
@@ -73,9 +66,8 @@ public class UserPreference implements Serializable {
       try {
         UserPreference compareToSettings = (UserPreference) compareTo;
         if (this.UserId.equals(compareToSettings.UserId) &&
-          this.TeamShortName.equals(compareToSettings.TeamShortName) &&
-          this.TeamFullName.equals(compareToSettings.TeamFullName) &&
           this.Season == compareToSettings.Season &&
+          this.TeamId.equals(compareToSettings.TeamId) &&
           this.Compare == ((UserPreference) compareTo).Compare) {
           return true;
         }
@@ -85,15 +77,5 @@ public class UserPreference implements Serializable {
     }
 
     return false;
-  }
-
-  @Override
-  public String toString() {
-
-    if (this.TeamShortName.isEmpty() || this.Season == 0) {
-      return "";
-    }
-
-    return String.format(Locale.ENGLISH, "%1s-%2d", this.TeamShortName, this.Season);
   }
 }

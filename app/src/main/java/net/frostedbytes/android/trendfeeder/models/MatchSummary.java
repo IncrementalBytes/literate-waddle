@@ -1,16 +1,21 @@
 package net.frostedbytes.android.trendfeeder.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.google.firebase.database.Exclude;
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import net.frostedbytes.android.trendfeeder.BaseActivity;
 
-public class MatchSummary implements Serializable {
+public class MatchSummary implements Parcelable {
 
   @Exclude
   public static final String ROOT = "MatchSummaries";
+
+  /**
+   * Unique identifier for away team.
+   */
+  public String AwayId;
 
   /**
    * Goals scored by the away team.
@@ -18,19 +23,14 @@ public class MatchSummary implements Serializable {
   public long AwayScore;
 
   /**
-   * Name for away team; used as identifier for other classes.
+   * Unique identifier for home team.
    */
-  public String AwayTeamName;
+  public String HomeId;
 
   /**
    * Goals scored by the home team.
    */
   public long HomeScore;
-
-  /**
-   * Name for home team; used as identifier for other classes.
-   */
-  public String HomeTeamName;
 
   /**
    * Value indicating whether or not this match is final.
@@ -58,20 +58,14 @@ public class MatchSummary implements Serializable {
   public MatchSummary() {
 
     // Default constructor required for calls to DataSnapshot.getValue(MatchSummary.class)
+    this.AwayId = BaseActivity.DEFAULT_ID;
     this.AwayScore = 0;
-    this.AwayTeamName = "";
+    this.HomeId = BaseActivity.DEFAULT_ID;
     this.HomeScore = 0;
-    this.HomeTeamName = "";
     this.IsFinal = false;
     this.MatchId = BaseActivity.DEFAULT_ID;
     this.MatchDate = BaseActivity.DEFAULT_DATE;
     this.MatchDay = 0;
-  }
-
-  @Override
-  public String toString() {
-
-    return String.format(Locale.ENGLISH, "%1s vs. %2s - %s", this.HomeTeamName, this.AwayTeamName, this.MatchDate);
   }
 
   /**
@@ -81,13 +75,58 @@ public class MatchSummary implements Serializable {
   public Map<String, Object> toMap() {
 
     HashMap<String, Object> result = new HashMap<>();
-    result.put("AwayScore", AwayScore);
-    result.put("AwayTeamName", AwayTeamName);
-    result.put("HomeScore", HomeScore);
-    result.put("HomeTeamName", HomeTeamName);
-    result.put("IsFinal", IsFinal);
-    result.put("MatchDate", MatchDate);
-    result.put("MatchDay", MatchDay);
+    result.put("AwayId", this.AwayId);
+    result.put("AwayScore", this.AwayScore);
+    result.put("HomeId", this.HomeId);
+    result.put("HomeScore", this.HomeScore);
+    result.put("IsFinal", this.IsFinal);
+    result.put("MatchDate", this.MatchDate);
+    result.put("MatchDay", this.MatchDay);
     return result;
   }
+
+  protected MatchSummary(Parcel in) {
+
+    this.AwayId = in.readString();
+    this.AwayScore = in.readLong();
+    this.HomeId = in.readString();
+    this.HomeScore = in.readLong();
+    this.IsFinal = in.readInt() != 0;
+    this.MatchId = in.readString();
+    this.MatchDate = in.readString();
+    this.MatchDay = in.readInt();
+  }
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+
+    dest.writeString(this.AwayId);
+    dest.writeLong(this.AwayScore);
+    dest.writeString(this.HomeId);
+    dest.writeLong(this.HomeScore);
+    dest.writeInt(this.IsFinal?1:0);
+    dest.writeString(this.MatchId);
+    dest.writeString(this.MatchDate);
+    dest.writeInt(this.MatchDay);
+  }
+
+  public static final Creator<MatchSummary> CREATOR = new Creator<MatchSummary>() {
+
+    @Override
+    public MatchSummary createFromParcel(Parcel in) {
+
+      return new MatchSummary(in);
+    }
+
+    @Override
+    public MatchSummary[] newArray(int size) {
+
+      return new MatchSummary[size];
+    }
+  };
 }
