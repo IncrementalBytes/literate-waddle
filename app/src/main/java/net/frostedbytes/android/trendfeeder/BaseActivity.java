@@ -3,13 +3,12 @@ package net.frostedbytes.android.trendfeeder;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
 import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class BaseActivity extends AppCompatActivity {
 
   public static final String ARG_EMAIL = "email";
+  public static final String ARG_EMPTY_MESSAGE = "empty_message";
   public static final String ARG_MATCH_SUMMARIES = "match_summaries";
   public static final String ARG_MATCH_SUMMARY = "match_summary";
   public static final String ARG_TEAMS = "teams";
@@ -28,11 +27,6 @@ public class BaseActivity extends AppCompatActivity {
     super.onCreate(saved);
 
     LogUtils.debug(TAG, "++onCreate(Bundle)");
-    if (!BuildConfig.DEBUG) {
-      Fabric.with(this, new Crashlytics());
-    } else {
-      LogUtils.debug(TAG, "Skipping Crashlytics setup; debug build.");
-    }
   }
 
   void showProgressDialog(String message) {

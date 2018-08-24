@@ -3,6 +3,7 @@ package net.frostedbytes.android.trendfeeder;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -17,12 +18,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import net.frostedbytes.android.trendfeeder.fragments.CreateMatchFragment;
+import net.frostedbytes.android.trendfeeder.fragments.EmptyFragment;
 import net.frostedbytes.android.trendfeeder.fragments.MainActivityFragment;
 import net.frostedbytes.android.trendfeeder.fragments.MatchDetailsFragment;
 import net.frostedbytes.android.trendfeeder.fragments.UserPreferencesFragment;
@@ -52,13 +55,24 @@ public class MainActivity extends BaseActivity implements
   private ValueEventListener mMatchSummariesListener;
   private ValueEventListener mTeamsListener;
 
+  @LayoutRes
+  protected int getLayoutResId() {
+
+    return R.layout.activity_masterdetail;
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.activity_main);
-    Toolbar toolbar = findViewById(R.id.main_toolbar);
-    setSupportActionBar(toolbar);
+    setContentView(getLayoutResId());
+    if (findViewById(R.id.main_fragment_container_detail) == null) {
+      Toolbar toolbar = findViewById(R.id.main_toolbar);
+      setSupportActionBar(toolbar);
+    } else {
+      Toolbar toolbar = findViewById(R.id.main_tablet_toolbar);
+      setSupportActionBar(toolbar);
+    }
 
     mUserPreference = new UserPreference();
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -79,7 +93,7 @@ public class MainActivity extends BaseActivity implements
     if (sharedPreferences.contains(UserPreferencesFragment.KEY_SEASON_PREFERENCE)) {
       String preference = sharedPreferences.getString(UserPreferencesFragment.KEY_SEASON_PREFERENCE, getString(R.string.none));
       if (preference.equals(getString(R.string.none))) {
-        mUserPreference.Season = 0;
+        mUserPreference.Season = Calendar.getInstance().get(Calendar.YEAR);
       } else {
         mUserPreference.Season = Integer.parseInt(preference);
       }
@@ -112,6 +126,13 @@ public class MainActivity extends BaseActivity implements
       }
     };
     mTeamsQuery.addValueEventListener(mTeamsListener);
+
+    if (findViewById(R.id.main_fragment_container_detail) != null) {
+      Fragment fragment = EmptyFragment.newInstance("");
+      getSupportFragmentManager().beginTransaction()
+        .replace(R.id.main_fragment_container_detail, fragment)
+        .commit();
+    }
   }
 
   @Override
@@ -119,7 +140,14 @@ public class MainActivity extends BaseActivity implements
 
     LogUtils.debug(TAG, "++onCreateMatch()");
     setTitle("New Match");
-    replaceFragment(CreateMatchFragment.newInstance(mUserPreference, mTeams, mMatchSummaries));
+    if (findViewById(R.id.main_fragment_container_detail) == null) {
+      replaceFragment(CreateMatchFragment.newInstance(mTeams, mMatchSummaries));
+    } else {
+      Fragment fragment = CreateMatchFragment.newInstance(mTeams, mMatchSummaries);
+      getSupportFragmentManager().beginTransaction()
+        .replace(R.id.main_fragment_container_detail, fragment)
+        .commit();
+    }
   }
 
   @Override
@@ -127,6 +155,22 @@ public class MainActivity extends BaseActivity implements
 
     getMenuInflater().inflate(R.menu.menu_main, menu);
     return true;
+  }
+
+  @Override
+  public void onDeleteMatch(MatchSummary matchSummary) {
+
+    LogUtils.debug(TAG, "++onDeleteMatch(MatchSummary)");
+    String queryPath = PathUtils.combine(MatchSummary.ROOT, mUserPreference.Season, matchSummary.MatchId);
+    FirebaseDatabase.getInstance().getReference().child(queryPath).removeValue((databaseError, databaseReference) -> {
+
+      if (databaseError != null && databaseError.getCode() < 0) {
+        LogUtils.error(TAG, "Could not delete match: %s", databaseError.getMessage());
+        Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.err_match_not_deleted), Snackbar.LENGTH_LONG).show();
+      }
+    });
+
+      // TODO: remove trends?
   }
 
   @Override
@@ -157,12 +201,19 @@ public class MainActivity extends BaseActivity implements
 
           if (databaseError != null && databaseError.getCode() < 0) {
             LogUtils.error(TAG, "Could not create match: %s", databaseError.getMessage());
-            Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_match_not_created), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.err_match_not_created), Snackbar.LENGTH_LONG).show();
           }
         });
     }
 
-    replaceFragment(MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries));
+    if (findViewById(R.id.main_fragment_container_detail) == null) {
+      replaceFragment(MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries));
+    } else {
+      Fragment fragment = EmptyFragment.newInstance(getString(R.string.empty_default));
+      getSupportFragmentManager().beginTransaction()
+        .replace(R.id.main_fragment_container_detail, fragment)
+        .commit();
+    }
   }
 
   @Override
@@ -194,6 +245,14 @@ public class MainActivity extends BaseActivity implements
             }
 
             generateTrends();
+            if (findViewById(R.id.main_fragment_container_detail) == null) {
+              replaceFragment(MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries));
+            } else {
+              Fragment fragment = EmptyFragment.newInstance(getString(R.string.empty_default));
+              getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_fragment_container_detail, fragment)
+                .commit();
+            }
           }
 
           @Override
@@ -205,7 +264,6 @@ public class MainActivity extends BaseActivity implements
         matchSummaryQuery.addValueEventListener(valueEventListener);
       } else {
         LogUtils.warn(TAG, "User preferences were incomplete.");
-        LogUtils.debug(TAG, "%s : %d Season", mUserPreference.TeamId, mUserPreference.Season);
       }
     }
   }
@@ -214,7 +272,7 @@ public class MainActivity extends BaseActivity implements
   public void onMatchUpdateFailed() {
 
     LogUtils.debug(TAG, "++onMatchUpdateFailed()");
-    Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_match_not_updated), Snackbar.LENGTH_LONG).show();
+    Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.err_match_not_updated), Snackbar.LENGTH_LONG).show();
   }
 
   @Override
@@ -222,7 +280,20 @@ public class MainActivity extends BaseActivity implements
 
     switch (item.getItemId()) {
       case R.id.action_settings:
-        replaceFragment(UserPreferencesFragment.newInstance(mTeams));
+
+        if (findViewById(R.id.main_fragment_container_detail) == null) {
+          replaceFragment(UserPreferencesFragment.newInstance(mTeams));
+        } else {
+          Fragment fragment = UserPreferencesFragment.newInstance(mTeams);
+          getSupportFragmentManager().beginTransaction()
+            .replace(R.id.main_fragment_container_detail, fragment)
+            .commit();
+          Fragment emptyFragment = EmptyFragment.newInstance("");
+          getSupportFragmentManager().beginTransaction()
+            .replace(R.id.main_fragment_container, emptyFragment)
+            .commit();
+        }
+
         return true;
     }
 
@@ -238,7 +309,7 @@ public class MainActivity extends BaseActivity implements
       setTitle(getResources().getQuantityString(R.plurals.subtitle, size, getTeamName(mUserPreference.TeamId), size));
     } else {
       setTitle("Match Summaries");
-      Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.no_matches), Snackbar.LENGTH_LONG).show();
+      missingPreference();
     }
   }
 
@@ -265,10 +336,25 @@ public class MainActivity extends BaseActivity implements
       if (sharedPreferences.contains(UserPreferencesFragment.KEY_SEASON_PREFERENCE)) {
         String preference = sharedPreferences.getString(UserPreferencesFragment.KEY_SEASON_PREFERENCE, getString(R.string.none));
         if (preference.equals(getString(R.string.none))) {
-          mUserPreference.Season = 0;
+          mUserPreference.Season = Calendar.getInstance().get(Calendar.YEAR);
         } else {
           mUserPreference.Season = Integer.parseInt(preference);
         }
+      }
+    }
+
+    if (mUserPreference == null || mUserPreference.TeamId.isEmpty()) {
+      missingPreference();
+    } else {
+      if (findViewById(R.id.main_fragment_container_detail) == null) {
+        replaceFragment(MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries));
+      } else {
+        Fragment fragment = MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries);
+        Fragment emptyFragment = EmptyFragment.newInstance(getString(R.string.empty_default));
+        getSupportFragmentManager().beginTransaction()
+          .replace(R.id.main_fragment_container, fragment)
+          .replace(R.id.main_fragment_container_detail, emptyFragment)
+          .commit();
       }
     }
   }
@@ -278,7 +364,14 @@ public class MainActivity extends BaseActivity implements
 
     LogUtils.debug(TAG, "++onSelected(MatchSummary)");
     setTitle("Match Details");
-    replaceFragment(MatchDetailsFragment.newInstance(mUserPreference, matchSummary, mTeams));
+    if (findViewById(R.id.main_fragment_container_detail) == null) {
+      replaceFragment(MatchDetailsFragment.newInstance(mUserPreference, matchSummary, mTeams));
+    } else {
+      Fragment fragment = MatchDetailsFragment.newInstance(mUserPreference, matchSummary, mTeams);
+      getSupportFragmentManager().beginTransaction()
+        .replace(R.id.main_fragment_container_detail, fragment)
+        .commit();
+    }
   }
 
   private void generateTrends() {
@@ -305,6 +398,7 @@ public class MainActivity extends BaseActivity implements
     long matchesRemaining = totalMatches;
     if (mUserPreference == null || mUserPreference.Season == 0 || mUserPreference.TeamId.equals(BaseActivity.DEFAULT_ID)) {
       LogUtils.error(TAG, "Missing user preferences; halting trend generation.");
+      Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.err_missing_preferences), Snackbar.LENGTH_LONG).show();
       return;
     }
 
@@ -375,7 +469,7 @@ public class MainActivity extends BaseActivity implements
 
         if (databaseError != null && databaseError.getCode() < 0) {
           LogUtils.error(TAG, "Could not generate trends: %s", databaseError.getMessage());
-          Snackbar.make(findViewById(R.id.fragment_container), getString(R.string.err_trends_not_created), Snackbar.LENGTH_LONG).show();
+          Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.err_trends_not_created), Snackbar.LENGTH_LONG).show();
         }
       });
 
@@ -383,6 +477,11 @@ public class MainActivity extends BaseActivity implements
   }
 
   private String getTeamName(String teamId) {
+
+    if (mTeams == null) {
+      LogUtils.warn(TAG, "Team data is empty/null.");
+      return "N/A";
+    }
 
     for (Team team : mTeams) {
       if (team.Id.equals(teamId)) {
@@ -413,7 +512,16 @@ public class MainActivity extends BaseActivity implements
         }
 
         Collections.reverse(mMatchSummaries);
-        replaceFragment(MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries));
+        if (findViewById(R.id.main_fragment_container_detail) == null) {
+          replaceFragment(MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries));
+        } else {
+          Fragment fragment = MainActivityFragment.newInstance(mUserPreference, mTeams, mMatchSummaries);
+          Fragment emptyFragment = EmptyFragment.newInstance(getString(R.string.empty_default));
+          getSupportFragmentManager().beginTransaction()
+            .replace(R.id.main_fragment_container_detail, emptyFragment)
+            .replace(R.id.main_fragment_container, fragment)
+            .commit();
+        }
       }
 
       @Override
@@ -424,6 +532,28 @@ public class MainActivity extends BaseActivity implements
       }
     };
     mMatchSummariesQuery.addValueEventListener(mMatchSummariesListener);
+  }
+
+  private void missingPreference() {
+
+    LogUtils.debug(TAG, "++missingPreference()");
+    Snackbar snackbar = Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.no_matches), Snackbar.LENGTH_INDEFINITE);
+    snackbar.setAction("Settings", v -> {
+      snackbar.dismiss();
+      if (findViewById(R.id.main_fragment_container_detail) == null) {
+        replaceFragment(UserPreferencesFragment.newInstance(mTeams));
+      } else {
+        Fragment fragment = UserPreferencesFragment.newInstance(mTeams);
+        getSupportFragmentManager().beginTransaction()
+          .replace(R.id.main_fragment_container_detail, fragment)
+          .commit();
+        Fragment emptyFragment = EmptyFragment.newInstance("");
+        getSupportFragmentManager().beginTransaction()
+          .replace(R.id.main_fragment_container, emptyFragment)
+          .commit();
+      }
+    });
+    snackbar.show();
   }
 
   private void replaceFragment(Fragment fragment){
@@ -442,7 +572,7 @@ public class MainActivity extends BaseActivity implements
     boolean fragmentPopped = fragmentManager.popBackStackImmediate (backStateName, 0);
     if (!fragmentPopped){ //fragment not in back stack, create it.
       FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-      fragmentTransaction.replace(R.id.fragment_container, fragment);
+      fragmentTransaction.replace(R.id.main_fragment_container, fragment);
       fragmentTransaction.addToBackStack(backStateName);
       fragmentTransaction.commit();
     }

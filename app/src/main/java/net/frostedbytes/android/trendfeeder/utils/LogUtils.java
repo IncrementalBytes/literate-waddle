@@ -1,7 +1,6 @@
 package net.frostedbytes.android.trendfeeder.utils;
 
 import android.util.Log;
-import com.crashlytics.android.Crashlytics;
 import java.util.Locale;
 import net.frostedbytes.android.trendfeeder.BuildConfig;
 
@@ -28,8 +27,6 @@ public class LogUtils {
 
     if (BuildConfig.DEBUG) {
       Log.e(tag, String.format(Locale.ENGLISH, messageFormat, args));
-    } else {
-      Crashlytics.log(String.format(Locale.ENGLISH, messageFormat, args));
     }
   }
 

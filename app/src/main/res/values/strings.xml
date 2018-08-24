@@ -9,10 +9,7 @@
   <string name="placeholder">TBD</string>
   <string name="full_time">FT</string>
   <string name="in_progress">In progress</string>
-  <string name="no_matches">No data, change Team and/or Season via Preferences.</string>
-  <string name="home">Home:</string>
-  <string name="away">Away:</string>
-  <string name="date">Date:</string>
+  <string name="no_matches">No data, change Team and/or Season via Settings.</string>
   <string name="create">Create</string>
   <string name="err_missing_home_selection">Please select a home team.</string>
   <string name="err_missing_away_selection">Please select an away team.</string>
@@ -26,14 +23,19 @@
     <item quantity="other">%s - %d matches</item>
   </plurals>
   <string name="generating_trends">Generating Trends…</string>
-  <string name="hint_month_of_match">Month</string>
-  <string name="hint_day_of_match">Day</string>
-  <string name="hint_year_of_match">Year</string>
   <string name="hint_away_score">Score for away team</string>
   <string name="hint_score_home">Score for home team</string>
   <string name="err_match_not_created">Failed to create match. Permissions?</string>
   <string name="err_trends_not_created">Failed to generate trends. Permissions?</string>
   <string name="err_match_not_updated">Could not update match details. Permissions?</string>
+  <string name="err_missing_preferences">Missing user preferences; halting trend generation.</string>
   <string name="desc_add_match">Click to add a match</string>
   <string name="desc_matches_list">List of matches</string>
+  <string name="upcoming">Upcoming</string>
+  <string name="delayed">Results Delayed</string>
+  <string name="versus">vs.</string>
+  <string name="select_home_team">Select home team</string>
+  <string name="select_away_team">Select away team</string>
+  <string name="empty_default">Select an existing match or create a new match.</string>
+  <string name="err_match_not_deleted">Could not delete match.</string>
 </resources>

@@ -15,8 +15,8 @@
     android:singleLine="true"
     android:text="@string/placeholder"
     android:textSize="18sp"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toStartOf="@id/match_item_delete"
     app:layout_constraintTop_toTopOf="parent"/>
   <TextView
     android:id="@+id/match_item_date"
@@ -27,7 +27,7 @@
     android:layout_marginEnd="@dimen/default_view_margin"
     android:layout_marginBottom="@dimen/default_view_margin"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/match_item_title"
     android:text="@string/placeholder"
     android:textColor="@color/colorAccent"/>
@@ -53,9 +53,18 @@
     android:layout_marginEnd="16dp"
     android:layout_marginBottom="@dimen/default_view_margin"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintEnd_toStartOf="@id/match_item_delete"
     app:layout_constraintTop_toBottomOf="@+id/match_item_title"
     android:text="@string/placeholder"
     android:textColor="@color/colorAccent"/>
+  <net.frostedbytes.android.trendfeeder.views.TouchableImageView
+    android:id="@+id/match_item_delete"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/ic_delete_dark"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toEndOf="@id/match_item_title"/>
 
 </android.support.constraint.ConstraintLayout>

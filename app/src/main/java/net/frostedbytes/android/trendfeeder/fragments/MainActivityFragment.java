@@ -2,6 +2,7 @@ package net.frostedbytes.android.trendfeeder.fragments;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -9,10 +10,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import net.frostedbytes.android.trendfeeder.BaseActivity;
@@ -22,6 +25,7 @@ import net.frostedbytes.android.trendfeeder.models.Team;
 import net.frostedbytes.android.trendfeeder.models.UserPreference;
 import net.frostedbytes.android.trendfeeder.utils.DateUtils;
 import net.frostedbytes.android.trendfeeder.utils.LogUtils;
+import net.frostedbytes.android.trendfeeder.views.TouchableImageView;
 
 public class MainActivityFragment extends Fragment {
 
@@ -30,14 +34,14 @@ public class MainActivityFragment extends Fragment {
   public interface OnMatchListListener {
 
     void onCreateMatch();
-
+    void onDeleteMatch(MatchSummary matchSummary);
     void onPopulated(int size);
-
     void onSelected(MatchSummary matchSummary);
   }
 
   private OnMatchListListener mCallback;
 
+  private FloatingActionButton mCreateButton;
   private RecyclerView mRecyclerView;
 
   private ArrayList<MatchSummary> mMatchSummaries;
@@ -55,6 +59,12 @@ public class MainActivityFragment extends Fragment {
     return fragment;
   }
 
+  @LayoutRes
+  protected int getLayoutResId() {
+
+    return R.layout.activity_main_tablet;
+  }
+
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -65,8 +75,8 @@ public class MainActivityFragment extends Fragment {
     final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
     mRecyclerView.setLayoutManager(linearLayoutManager);
 
-    FloatingActionButton createButton = view.findViewById(R.id.main_button_create_match);
-    createButton.setOnClickListener(buttonView -> {
+    mCreateButton = view.findViewById(R.id.main_button_create_match);
+    mCreateButton.setOnClickListener(buttonView -> {
 
       if (mCallback != null) {
         mCallback.onCreateMatch();
@@ -116,6 +126,11 @@ public class MainActivityFragment extends Fragment {
 
   private String getTeamName(String teamId) {
 
+    if (mTeams == null) {
+      LogUtils.warn(TAG, "Team data is empty/null.");
+      return "N/A";
+    }
+
     for (Team team : mTeams) {
       if (team.Id.equals(teamId)) {
         return team.FullName;
@@ -132,8 +147,10 @@ public class MainActivityFragment extends Fragment {
       MatchSummaryAdapter matchAdapter = new MatchSummaryAdapter(mMatchSummaries);
       mRecyclerView.setAdapter(matchAdapter);
       matchAdapter.notifyDataSetChanged();
+      mCreateButton.setVisibility(View.VISIBLE);
       mCallback.onPopulated(matchAdapter.getItemCount());
     } else {
+      mCreateButton.setVisibility(View.INVISIBLE);
       mCallback.onPopulated(0);
     }
   }
@@ -174,6 +191,7 @@ public class MainActivityFragment extends Fragment {
     private final TextView mMatchDateTextView;
     private final TextView mMatchScoreTextView;
     private final TextView mMatchStatusTextView;
+    private final TouchableImageView mDeleteImageView;
 
     private MatchSummary mMatchSummary;
 
@@ -185,6 +203,21 @@ public class MainActivityFragment extends Fragment {
       mMatchDateTextView = itemView.findViewById(R.id.match_item_date);
       mMatchScoreTextView = itemView.findViewById(R.id.match_item_score);
       mMatchStatusTextView = itemView.findViewById(R.id.match_item_status);
+      mDeleteImageView = itemView.findViewById(R.id.match_item_delete);
+
+      mDeleteImageView.setOnTouchListener((view, motionEvent) -> {
+
+        switch (motionEvent.getAction()) {
+          case MotionEvent.ACTION_DOWN:
+            mCallback.onDeleteMatch(mMatchSummary);
+            break;
+          case MotionEvent.ACTION_UP:
+            view.performClick();
+            return true;
+        }
+
+        return true;
+      });
     }
 
     void bind(MatchSummary matchSummary) {
@@ -207,7 +240,21 @@ public class MainActivityFragment extends Fragment {
         mMatchStatusTextView.setText(R.string.full_time);
         mMatchStatusTextView.setTypeface(null, Typeface.BOLD);
       } else {
-        mMatchStatusTextView.setText(R.string.in_progress);
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = String.format(
+          Locale.ENGLISH,
+          "%04d%02d%02d",
+          calendar.get(Calendar.YEAR),
+          calendar.get(Calendar.MONTH) + 1, // note: month value is based on 0-11
+          calendar.get(Calendar.DAY_OF_MONTH));
+        if (mMatchSummary.MatchDate.compareTo(currentDate) == 0) {
+          mMatchStatusTextView.setText(R.string.in_progress);
+        } else if (mMatchSummary.MatchDate.compareTo(currentDate) > 0){
+          mMatchStatusTextView.setText(R.string.upcoming);
+        } else {
+          mMatchStatusTextView.setText(R.string.delayed);
+        }
+
         mMatchStatusTextView.setTypeface(null, Typeface.ITALIC);
       }
     }

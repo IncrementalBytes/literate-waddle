@@ -4,89 +4,54 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <TextView
-    android:id="@+id/crate_text_home"
-    android:textStyle="bold"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_view_margin"
-    android:text="@string/home"
-    android:textSize="18sp"
-    app:layout_constraintBottom_toBottomOf="@+id/create_spinner_home"
-    app:layout_constraintEnd_toStartOf="@+id/create_guideline"
-    app:layout_constraintTop_toTopOf="@+id/create_spinner_home"/>
   <Spinner
     android:id="@+id/create_spinner_home"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_view_margin"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="@+id/create_guideline"
-    app:layout_constraintTop_toTopOf="parent"/>
-  <TextView
-    android:id="@+id/create_text_away"
-    android:textStyle="bold"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/default_view_margin"
-    android:text="@string/away"
+    android:contentDescription="@string/select_home_team"
+    android:gravity="center"
+    android:textAlignment="center"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"/>
+
+  <TextView
+    android:id="@+id/create_text_versus"
+    android:textStyle="bold"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:text="@string/versus"
+    android:textAlignment="center"
     android:textSize="18sp"
-    app:layout_constraintBottom_toBottomOf="@+id/create_spinner_away"
-    app:layout_constraintEnd_toStartOf="@+id/create_guideline"
-    app:layout_constraintTop_toTopOf="@+id/create_spinner_away"/>
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/create_spinner_home"/>
+
   <Spinner
     android:id="@+id/create_spinner_away"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_view_margin"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="@+id/create_guideline"
-    app:layout_constraintTop_toBottomOf="@+id/create_spinner_home"/>
-  <TextView
-    android:id="@+id/create_text_date"
-    android:textStyle="bold"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/default_view_margin"
-    android:labelFor="@id/create_edit_year"
-    android:text="@string/date"
-    android:textSize="18sp"
-    app:layout_constraintBottom_toBottomOf="@+id/create_edit_month"
-    app:layout_constraintEnd_toStartOf="@+id/create_guideline"
-    app:layout_constraintTop_toTopOf="@+id/create_edit_month"/>
-  <EditText
-    android:id="@+id/create_edit_month"
-    android:layout_width="60dp"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_view_margin"
-    android:ems="3"
-    android:inputType="number"
-    android:hint="@string/hint_month_of_match"
+    android:contentDescription="@string/select_away_team"
+    android:gravity="center"
     android:textAlignment="center"
-    app:layout_constraintStart_toStartOf="@+id/create_guideline"
-    app:layout_constraintTop_toBottomOf="@+id/create_spinner_away"/>
-  <EditText
-    android:id="@+id/create_edit_day"
-    android:layout_width="60dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/create_text_versus"/>
+
+  <CalendarView
+    android:id="@+id/create_calendar"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_view_margin"
-    android:ems="3"
-    android:inputType="number"
-    android:hint="@string/hint_day_of_match"
-    android:textAlignment="center"
-    app:layout_constraintStart_toEndOf="@+id/create_edit_month"
+    android:layout_marginTop="32dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/create_spinner_away"/>
-  <EditText
-    android:id="@+id/create_edit_year"
-    android:layout_width="120dp"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_view_margin"
-    android:ems="6"
-    android:inputType="number"
-    android:textAlignment="center"
-    android:hint="@string/hint_year_of_match"
-    app:layout_constraintStart_toEndOf="@+id/create_edit_day"
-    app:layout_constraintTop_toBottomOf="@+id/create_spinner_away"/>
+
   <TextView
     android:id="@+id/create_text_error"
     android:layout_width="match_parent"
@@ -105,11 +70,5 @@
     android:text="@string/create"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"/>
-  <android.support.constraint.Guideline
-    android:id="@+id/create_guideline"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintGuide_begin="76dp"/>
 
 </android.support.constraint.ConstraintLayout>

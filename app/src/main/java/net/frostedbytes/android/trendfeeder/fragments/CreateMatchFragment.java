@@ -9,10 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CalendarView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +22,6 @@ import net.frostedbytes.android.trendfeeder.BaseActivity;
 import net.frostedbytes.android.trendfeeder.R;
 import net.frostedbytes.android.trendfeeder.models.MatchSummary;
 import net.frostedbytes.android.trendfeeder.models.Team;
-import net.frostedbytes.android.trendfeeder.models.UserPreference;
 import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class CreateMatchFragment extends Fragment {
@@ -37,21 +37,19 @@ public class CreateMatchFragment extends Fragment {
 
   private Spinner mAwaySpinner;
   private Spinner mHomeSpinner;
-  private EditText mMonthText;
-  private EditText mDayText;
-  private EditText mYearText;
   private TextView mErrorMessageText;
 
+  private int mMatchDay;
+  private int mMatchMonth;
   private ArrayList<MatchSummary> mMatchSummaries;
+  private int mMatchYear;
   private ArrayList<Team> mTeams;
-  private UserPreference mUserPreference;
 
-  public static CreateMatchFragment newInstance(UserPreference userPreference, ArrayList<Team> teams, ArrayList<MatchSummary> matchSummaries) {
+  public static CreateMatchFragment newInstance(ArrayList<Team> teams, ArrayList<MatchSummary> matchSummaries) {
 
-    LogUtils.debug(TAG, "++newInstance(UserPreference)");
+    LogUtils.debug(TAG, "++newInstance(ArrayList<>, ArrayList<>)");
     CreateMatchFragment fragment = new CreateMatchFragment();
     Bundle args = new Bundle();
-    args.putSerializable(BaseActivity.ARG_USER_PREFERENCE, userPreference);
     args.putParcelableArrayList(BaseActivity.ARG_TEAMS, teams);
     args.putParcelableArrayList(BaseActivity.ARG_MATCH_SUMMARIES, matchSummaries);
     fragment.setArguments(args);
@@ -64,21 +62,24 @@ public class CreateMatchFragment extends Fragment {
     LogUtils.debug(TAG, "++onCreateView(LayoutInflater, ViewGroup, Bundle)");
     final View view = inflater.inflate(R.layout.fragment_create_match, container, false);
 
-    Bundle arguments = getArguments();
-    if (arguments != null) {
-      mUserPreference = (UserPreference) arguments.getSerializable(BaseActivity.ARG_USER_PREFERENCE);
-    } else {
-      LogUtils.error(TAG, "Arguments were null.");
-    }
-
     mAwaySpinner = view.findViewById(R.id.create_spinner_away);
-    mDayText = view.findViewById(R.id.create_edit_day);
     mHomeSpinner = view.findViewById(R.id.create_spinner_home);
-    mMonthText = view.findViewById(R.id.create_edit_month);
-    mYearText = view.findViewById(R.id.create_edit_year);
     mErrorMessageText = view.findViewById(R.id.create_text_error);
 
+    Calendar calendar = Calendar.getInstance(); // set default to current day
+    mMatchDay = calendar.get(Calendar.DAY_OF_MONTH);
+    mMatchMonth = calendar.get(Calendar.MONTH) + 1; // note: month value is based on 0-11
+    mMatchYear = calendar.get(Calendar.YEAR);
+
     populateSpinners();
+    CalendarView calendarView = view.findViewById(R.id.create_calendar);
+    calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
+
+      mMatchDay = dayOfMonth;
+      mMatchMonth = month + 1; // note: month value is based on 0-11
+      mMatchYear = year;
+    });
+
     Button createMatch = view.findViewById(R.id.create_button_create);
     createMatch.setOnClickListener(buttonView -> {
 
@@ -90,11 +91,8 @@ public class CreateMatchFragment extends Fragment {
         mErrorMessageText.setText(R.string.err_same_selection);
       } else {
         mErrorMessageText.setText("");
-        int year = Integer.parseInt(mYearText.getText().toString());
-        int month = Integer.parseInt(mMonthText.getText().toString());
-        int day = Integer.parseInt(mDayText.getText().toString());
         int matchDay = 1;
-        String matchDate = String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day);
+        String matchDate = String.format(Locale.ENGLISH, "%04d%02d%02d", mMatchYear, mMatchMonth, mMatchDay);
         String home = mHomeSpinner.getSelectedItem().toString();
         String away = mAwaySpinner.getSelectedItem().toString();
         boolean found = false;
@@ -123,8 +121,6 @@ public class CreateMatchFragment extends Fragment {
       }
     });
 
-    updateUI();
-
     return view;
   }
 
@@ -149,17 +145,14 @@ public class CreateMatchFragment extends Fragment {
     }
   }
 
-  @Override
-  public void onResume() {
-    super.onResume();
-
-    LogUtils.debug(TAG, "++onResume()");
-    updateUI();
-  }
-
   private String getTeamId(String fullName) {
 
-    for(Team team : mTeams) {
+    if (mTeams == null) {
+      LogUtils.warn(TAG, "Team data is empty/null.");
+      return BaseActivity.DEFAULT_ID;
+    }
+
+    for (Team team : mTeams) {
       if (team.FullName.equals(fullName)) {
         return team.Id;
       }
@@ -170,6 +163,11 @@ public class CreateMatchFragment extends Fragment {
   }
 
   private String getTeamName(String teamId) {
+
+    if (mTeams == null) {
+      LogUtils.warn(TAG, "Team data is empty/null.");
+      return "N/A";
+    }
 
     for (Team team : mTeams) {
       if (team.Id.equals(teamId)) {
@@ -196,14 +194,9 @@ public class CreateMatchFragment extends Fragment {
       teamsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
       mHomeSpinner.setAdapter(teamsAdapter);
       mAwaySpinner.setAdapter(teamsAdapter);
-    }
-  }
-
-  private void updateUI() {
-
-    LogUtils.debug(TAG, "++updateUI()");
-    if (mUserPreference != null) {
-      mYearText.setText(String.format(Locale.ENGLISH, "%1d", mUserPreference.Season));
+      if (mAwaySpinner.getSelectedItemPosition() == mHomeSpinner.getSelectedItemPosition()) {
+        mAwaySpinner.setSelection(mHomeSpinner.getSelectedItemPosition() + 1);
+      }
     }
   }
 }

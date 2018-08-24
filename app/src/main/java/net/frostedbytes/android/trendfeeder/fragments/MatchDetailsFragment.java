@@ -77,7 +77,7 @@ public class MatchDetailsFragment  extends Fragment {
     mIsFinalCheck.setChecked(mMatchSummary.IsFinal);
 
     Button updateButton = view.findViewById(R.id.details_button_update);
-    updateButton.setOnClickListener(buttonView -> {
+    updateButton.setOnClickListener(v -> {
 
       if (mAwayScoreText.getText().toString().isEmpty()) {
         mErrorMessageText.setText(R.string.err_no_away_score);
@@ -105,13 +105,15 @@ public class MatchDetailsFragment  extends Fragment {
               if (databaseError != null && databaseError.getCode() < 0) {
                 LogUtils.error(TAG, "Could not updated match: %s", databaseError.getMessage());
                 mCallback.onMatchUpdateFailed();
-              } else if (databaseError == null){
+              } else if (databaseError == null) {
                 mCallback.onMatchUpdated(updatedSummary);
               } else {
                 LogUtils.error(TAG, "Update failed with unexpected error: %d", databaseError.getCode());
                 mCallback.onMatchUpdateFailed();
               }
             });
+        } else {
+          LogUtils.error(TAG, "User Preferences were null; cannot update match.");
         }
       }
     });
@@ -142,6 +144,11 @@ public class MatchDetailsFragment  extends Fragment {
   }
 
   private String getTeamName(String teamId) {
+
+    if (mTeams == null) {
+      LogUtils.warn(TAG, "Team data is empty/null.");
+      return "N/A";
+    }
 
     for (Team team : mTeams) {
       if (team.Id.equals(teamId)) {

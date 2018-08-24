@@ -11,8 +11,8 @@ android {
         applicationId "net.frostedbytes.android.trendfeeder"
         minSdkVersion 24
         targetSdkVersion 27
-        versionCode 6
-        versionName "1.006"
+        versionCode 7
+        versionName "1.007"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     android.applicationVariants.all { variant ->
@@ -36,7 +36,6 @@ android {
             signingConfig signingConfigs.release
         }
         debug {
-            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -62,14 +61,12 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:preference-v7:27.1.1'
     // Google
-    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'com.google.android.gms:play-services-auth:16.0.0'
     // Firebase
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-database:16.0.1'
-    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
     implementation 'com.google.firebase:firebase-analytics:16.0.1'
-    // Crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
     // Testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
