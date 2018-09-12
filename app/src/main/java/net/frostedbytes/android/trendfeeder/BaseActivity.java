@@ -7,6 +7,7 @@ import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class BaseActivity extends AppCompatActivity {
 
+
   public static final String ARG_EMAIL = "email";
   public static final String ARG_EMPTY_MESSAGE = "empty_message";
   public static final String ARG_MATCH_SUMMARIES = "match_summaries";
@@ -18,7 +19,8 @@ public class BaseActivity extends AppCompatActivity {
   public static final String DEFAULT_DATE = "0000-01-01";
   public static final String DEFAULT_ID = "000000000-0000-0000-0000-000000000000";
 
-  private static final String TAG = BaseActivity.class.getSimpleName();
+  public static final String BASE_TAG = "TrendFeeder::";
+  private static final String TAG = BASE_TAG + BaseActivity.class.getSimpleName();
 
   private ProgressDialog mProgressDialog;
 

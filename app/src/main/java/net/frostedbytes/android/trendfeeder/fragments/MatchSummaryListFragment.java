@@ -1,8 +1,9 @@
 package net.frostedbytes.android.trendfeeder.fragments;
 
+import static net.frostedbytes.android.trendfeeder.BaseActivity.BASE_TAG;
+
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -27,15 +28,15 @@ import net.frostedbytes.android.trendfeeder.utils.DateUtils;
 import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 import net.frostedbytes.android.trendfeeder.views.TouchableImageView;
 
-public class MainActivityFragment extends Fragment {
+public class MatchSummaryListFragment extends Fragment {
 
-  private static final String TAG = MainActivityFragment.class.getSimpleName();
+  private static final String TAG = BASE_TAG + MatchSummaryListFragment.class.getSimpleName();
 
   public interface OnMatchListListener {
 
     void onCreateMatch();
     void onDeleteMatch(MatchSummary matchSummary);
-    void onPopulated(int size);
+    void onPopulated();
     void onSelected(MatchSummary matchSummary);
   }
 
@@ -47,10 +48,10 @@ public class MainActivityFragment extends Fragment {
   private ArrayList<MatchSummary> mMatchSummaries;
   private ArrayList<Team> mTeams;
 
-  public static MainActivityFragment newInstance(UserPreference userPreference, ArrayList<Team> teams, ArrayList<MatchSummary> matchSummaries) {
+  public static MatchSummaryListFragment newInstance(UserPreference userPreference, ArrayList<Team> teams, ArrayList<MatchSummary> matchSummaries) {
 
-    LogUtils.debug(TAG, "++newInstance(UserPreference)");
-    MainActivityFragment fragment = new MainActivityFragment();
+    LogUtils.debug(TAG, "++newInstance(UserPreference, ArrayList<Team>, ArrayList<MatchSummary>)");
+    MatchSummaryListFragment fragment = new MatchSummaryListFragment();
     Bundle args = new Bundle();
     args.putSerializable(BaseActivity.ARG_USER_PREFERENCE, userPreference);
     args.putParcelableArrayList(BaseActivity.ARG_TEAMS, teams);
@@ -59,10 +60,25 @@ public class MainActivityFragment extends Fragment {
     return fragment;
   }
 
-  @LayoutRes
-  protected int getLayoutResId() {
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
 
-    return R.layout.activity_main_tablet;
+    LogUtils.debug(TAG, "++onAttach(Context)");
+    try {
+      mCallback = (OnMatchListListener) context;
+    } catch (ClassCastException e) {
+      throw new ClassCastException(
+        String.format(Locale.ENGLISH, "%s must implement onPopulated(int) and onSelected(String).", context.toString()));
+    }
+
+    Bundle arguments = getArguments();
+    if (arguments != null) {
+      mMatchSummaries = arguments.getParcelableArrayList(BaseActivity.ARG_MATCH_SUMMARIES);
+      mTeams = arguments.getParcelableArrayList(BaseActivity.ARG_TEAMS);
+    } else {
+      LogUtils.error(TAG, "Arguments were null.");
+    }
   }
 
   @Override
@@ -89,30 +105,10 @@ public class MainActivityFragment extends Fragment {
   }
 
   @Override
-  public void onAttach(Context context) {
-    super.onAttach(context);
-
-    LogUtils.debug(TAG, "++onAttach(Context)");
-    try {
-      mCallback = (OnMatchListListener) context;
-    } catch (ClassCastException e) {
-      throw new ClassCastException(
-        String.format(Locale.ENGLISH, "%s must implement onPopulated(int) and onSelected(String).", context.toString()));
-    }
-
-    Bundle arguments = getArguments();
-    if (arguments != null) {
-      mMatchSummaries = arguments.getParcelableArrayList(BaseActivity.ARG_MATCH_SUMMARIES);
-      mTeams = arguments.getParcelableArrayList(BaseActivity.ARG_TEAMS);
-    } else {
-      LogUtils.error(TAG, "Arguments were null.");
-    }
-  }
-
-  @Override
   public void onDestroy() {
     super.onDestroy();
 
+    LogUtils.debug(TAG, "++onDestroy()");
     mMatchSummaries = null;
   }
 
@@ -148,11 +144,11 @@ public class MainActivityFragment extends Fragment {
       mRecyclerView.setAdapter(matchAdapter);
       matchAdapter.notifyDataSetChanged();
       mCreateButton.setVisibility(View.VISIBLE);
-      mCallback.onPopulated(matchAdapter.getItemCount());
     } else {
       mCreateButton.setVisibility(View.INVISIBLE);
-      mCallback.onPopulated(0);
     }
+
+    mCallback.onPopulated();
   }
 
   private class MatchSummaryAdapter extends RecyclerView.Adapter<MatchSummaryHolder> {

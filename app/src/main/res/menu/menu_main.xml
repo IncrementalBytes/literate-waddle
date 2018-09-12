@@ -3,6 +3,16 @@
   xmlns:tools="http://schemas.android.com/tools"
   tools:context="net.frostedbytes.android.trendfeeder.MainActivity">
   <item
+    android:id="@+id/action_create"
+    android:orderInCategory="100"
+    android:title="@string/action_create"
+    app:showAsAction="never"/>
+  <item
+    android:id="@+id/action_generate"
+    android:orderInCategory="100"
+    android:title="@string/action_generate"
+    app:showAsAction="never"/>
+  <item
     android:id="@+id/action_settings"
     android:orderInCategory="100"
     android:title="@string/action_settings"

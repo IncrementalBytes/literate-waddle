@@ -19,7 +19,7 @@ import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class SignInActivity extends BaseActivity implements OnClickListener {
 
-  private static final String TAG = SignInActivity.class.getSimpleName();
+  private static final String TAG = BASE_TAG + SignInActivity.class.getSimpleName();
 
   private static final int RC_SIGN_IN = 4701;
 

@@ -32,6 +32,9 @@ public class MatchSummary implements Parcelable {
    */
   public long HomeScore;
 
+  @Exclude
+  public boolean IsNew;
+
   /**
    * Value indicating whether or not this match is final.
    */
@@ -48,11 +51,6 @@ public class MatchSummary implements Parcelable {
   public String MatchDate;
 
   /**
-   * Iterated value representing the match throughout a season.
-   */
-  public int MatchDay;
-
-  /**
    * Constructs a new MatchSummary object with default values.
    */
   public MatchSummary() {
@@ -63,9 +61,9 @@ public class MatchSummary implements Parcelable {
     this.HomeId = BaseActivity.DEFAULT_ID;
     this.HomeScore = 0;
     this.IsFinal = false;
+    this.IsNew = true;
     this.MatchId = BaseActivity.DEFAULT_ID;
     this.MatchDate = BaseActivity.DEFAULT_DATE;
-    this.MatchDay = 0;
   }
 
   /**
@@ -81,7 +79,6 @@ public class MatchSummary implements Parcelable {
     result.put("HomeScore", this.HomeScore);
     result.put("IsFinal", this.IsFinal);
     result.put("MatchDate", this.MatchDate);
-    result.put("MatchDay", this.MatchDay);
     return result;
   }
 
@@ -92,9 +89,9 @@ public class MatchSummary implements Parcelable {
     this.HomeId = in.readString();
     this.HomeScore = in.readLong();
     this.IsFinal = in.readInt() != 0;
+    this.IsNew = in.readInt() != 0;
     this.MatchId = in.readString();
     this.MatchDate = in.readString();
-    this.MatchDay = in.readInt();
   }
 
   @Override
@@ -110,9 +107,9 @@ public class MatchSummary implements Parcelable {
     dest.writeString(this.HomeId);
     dest.writeLong(this.HomeScore);
     dest.writeInt(this.IsFinal?1:0);
+    dest.writeInt(this.IsNew?1:0);
     dest.writeString(this.MatchId);
     dest.writeString(this.MatchDate);
-    dest.writeInt(this.MatchDay);
   }
 
   public static final Creator<MatchSummary> CREATOR = new Creator<MatchSummary>() {

@@ -1,5 +1,7 @@
 package net.frostedbytes.android.trendfeeder.fragments;
 
+import static net.frostedbytes.android.trendfeeder.BaseActivity.BASE_TAG;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +17,7 @@ import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class EmptyFragment extends Fragment {
 
-  private static final String TAG = EmptyFragment.class.getSimpleName();
+  private static final String TAG = BASE_TAG + EmptyFragment.class.getSimpleName();
 
   private String mMessage;
 

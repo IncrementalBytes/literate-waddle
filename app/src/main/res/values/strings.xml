@@ -22,6 +22,7 @@
     <item quantity="one">%s - %d match</item>
     <item quantity="other">%s - %d matches</item>
   </plurals>
+  <string name="checking_data">Checking data…</string>
   <string name="generating_trends">Generating Trends…</string>
   <string name="hint_away_score">Score for away team</string>
   <string name="hint_score_home">Score for home team</string>
@@ -38,4 +39,11 @@
   <string name="select_away_team">Select away team</string>
   <string name="empty_default">Select an existing match or create a new match.</string>
   <string name="err_match_not_deleted">Could not delete match.</string>
+  <string name="err_team_data_load_failed">Failed to load team data.</string>
+  <string name="err_team_not_created">Could not create team.</string>
+  <string name="err_match_summary_data_load_failed">Failed to load match summary data.</string>
+  <string name="err_match_summary_data_cleanup_failed">Clean-up of match summary data failed.</string>
+  <string name="err_team_data_cleanup_failed">Clean-up of team data failed.</string>
+  <string name="action_create">Create Match</string>
+  <string name="action_generate">Generate Trends</string>
 </resources>

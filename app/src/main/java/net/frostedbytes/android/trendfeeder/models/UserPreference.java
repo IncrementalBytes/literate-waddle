@@ -1,5 +1,7 @@
 package net.frostedbytes.android.trendfeeder.models;
 
+import static net.frostedbytes.android.trendfeeder.BaseActivity.BASE_TAG;
+
 import com.google.firebase.database.Exclude;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -8,7 +10,7 @@ import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class UserPreference implements Serializable {
 
-  private static final String TAG = UserPreference.class.getSimpleName();
+  private static final String TAG = BASE_TAG + UserPreference.class.getSimpleName();
 
   /**
    * Year to compare Year results against.

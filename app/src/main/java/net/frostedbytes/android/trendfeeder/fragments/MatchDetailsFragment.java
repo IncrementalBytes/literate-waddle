@@ -1,5 +1,7 @@
 package net.frostedbytes.android.trendfeeder.fragments;
 
+import static net.frostedbytes.android.trendfeeder.BaseActivity.BASE_TAG;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,7 +28,7 @@ import net.frostedbytes.android.trendfeeder.utils.PathUtils;
 
 public class MatchDetailsFragment  extends Fragment {
 
-  private static final String TAG = MatchDetailsFragment.class.getSimpleName();
+  private static final String TAG = BASE_TAG + MatchDetailsFragment.class.getSimpleName();
 
   public interface OnMatchDetailsListener {
 
@@ -91,7 +93,6 @@ public class MatchDetailsFragment  extends Fragment {
         updatedSummary.HomeScore = Integer.parseInt(mHomeScoreText.getText().toString());
         updatedSummary.IsFinal = mIsFinalCheck.isChecked();
         updatedSummary.MatchDate = mMatchSummary.MatchDate;
-        updatedSummary.MatchDay = mMatchSummary.MatchDay;
         updatedSummary.MatchId = mMatchSummary.MatchId;
 
         if (mUserPreference != null) {

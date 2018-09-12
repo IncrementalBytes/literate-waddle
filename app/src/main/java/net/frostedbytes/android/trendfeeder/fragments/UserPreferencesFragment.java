@@ -1,5 +1,7 @@
 package net.frostedbytes.android.trendfeeder.fragments;
 
+import static net.frostedbytes.android.trendfeeder.BaseActivity.BASE_TAG;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,7 +17,7 @@ import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class UserPreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-  private static final String TAG = UserPreferencesFragment.class.getSimpleName();
+  private static final String TAG = BASE_TAG + UserPreferencesFragment.class.getSimpleName();
 
   public static final String KEY_TEAM_PREFERENCE = "preference_list_team";
   public static final String KEY_SEASON_PREFERENCE = "preference_list_season";

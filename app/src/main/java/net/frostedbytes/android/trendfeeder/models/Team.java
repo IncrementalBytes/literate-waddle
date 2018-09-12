@@ -12,7 +12,11 @@ public class Team implements Parcelable {
 
   public String FullName;
 
+  @Exclude
   public String Id;
+
+  @Exclude
+  public boolean IsNew;
 
   public String ShortName;
 
@@ -20,6 +24,7 @@ public class Team implements Parcelable {
 
     this.FullName = "";
     this.Id = BaseActivity.DEFAULT_ID;
+    this.IsNew = true;
     this.ShortName = "";
   }
 
@@ -27,6 +32,7 @@ public class Team implements Parcelable {
 
     this.FullName = in.readString();
     this.Id = in.readString();
+    this.IsNew = in.readInt() != 0;
     this.ShortName = in.readString();
   }
 
@@ -40,6 +46,7 @@ public class Team implements Parcelable {
 
     dest.writeString(this.FullName);
     dest.writeString(this.Id);
+    dest.writeInt(this.IsNew?1:0);
     dest.writeString(this.ShortName);
   }
 

@@ -1,5 +1,7 @@
 package net.frostedbytes.android.trendfeeder.fragments;
 
+import static net.frostedbytes.android.trendfeeder.BaseActivity.BASE_TAG;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,7 +28,7 @@ import net.frostedbytes.android.trendfeeder.utils.LogUtils;
 
 public class CreateMatchFragment extends Fragment {
 
-  private static final String TAG = CreateMatchFragment.class.getSimpleName();
+  private static final String TAG = BASE_TAG + CreateMatchFragment.class.getSimpleName();
 
   public interface OnCreateMatchListener {
 
@@ -91,7 +93,6 @@ public class CreateMatchFragment extends Fragment {
         mErrorMessageText.setText(R.string.err_same_selection);
       } else {
         mErrorMessageText.setText("");
-        int matchDay = 1;
         String matchDate = String.format(Locale.ENGLISH, "%04d%02d%02d", mMatchYear, mMatchMonth, mMatchDay);
         String home = mHomeSpinner.getSelectedItem().toString();
         String away = mAwaySpinner.getSelectedItem().toString();
@@ -104,8 +105,6 @@ public class CreateMatchFragment extends Fragment {
             mCallback.onMatchCreated(null);
             found = true;
             break;
-          } else {
-            matchDay++;
           }
         }
 
@@ -115,7 +114,6 @@ public class CreateMatchFragment extends Fragment {
           summary.AwayId = getTeamId(away);
           summary.HomeId = getTeamId(home);
           summary.MatchId = UUID.randomUUID().toString();
-          summary.MatchDay = matchDay;
           mCallback.onMatchCreated(summary);
         }
       }
