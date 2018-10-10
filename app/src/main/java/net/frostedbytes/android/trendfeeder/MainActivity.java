@@ -68,6 +68,7 @@ public class MainActivity extends BaseActivity implements
     return R.layout.activity_masterdetail;
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -126,13 +127,14 @@ public class MainActivity extends BaseActivity implements
         mTeams = new ArrayList<>();
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
           Team team = snapshot.getValue(Team.class);
-          if (team != null) {
+          if (team != null) { // all teams, including defunct. methods will need to add logic to handle/exclude multiples
             team.Id = snapshot.getKey();
             mTeams.add(team);
           }
         }
 
         mTeams.sort(new SortUtils.ByTeamName());
+        LogUtils.debug(TAG, "Size of team collection: %d", mTeams.size());
       }
 
       @Override
@@ -159,6 +161,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         mAllSummaries.sort((summary1, summary2) -> Integer.compare(summary2.MatchDate.compareTo(summary1.MatchDate), 0));
+        LogUtils.debug(TAG, "Size of all summaries: %d", mAllSummaries.size());
 
         // send only the match summaries for the user preferred team (if available)
         if (!mUserPreference.TeamId.isEmpty()) {
@@ -324,6 +327,7 @@ public class MainActivity extends BaseActivity implements
         this.onCreateMatch();
         return true;
       case R.id.action_generate:
+        this.showProgressDialog(getString(R.string.generating_trends));
         this.generateTrends();
         return true;
       case R.id.action_settings:
@@ -331,15 +335,11 @@ public class MainActivity extends BaseActivity implements
         if (findViewById(R.id.main_fragment_container_detail) == null) {
           replaceFragment(UserPreferencesFragment.newInstance(mTeams));
         } else {
-          Fragment fragment = MatchSummaryListFragment.newInstance(mUserPreference, mTeams, mSummaries);
+          Fragment emptyFragment = EmptyFragment.newInstance("");
           Fragment settingsFragment = UserPreferencesFragment.newInstance(mTeams);
           getSupportFragmentManager().beginTransaction()
-            .replace(R.id.main_fragment_container, fragment)
-            .replace(R.id.main_fragment_container_detail, settingsFragment)
-            .commit();
-          Fragment emptyFragment = EmptyFragment.newInstance("");
-          getSupportFragmentManager().beginTransaction()
             .replace(R.id.main_fragment_container, emptyFragment)
+            .replace(R.id.main_fragment_container_detail, settingsFragment)
             .commit();
         }
 
@@ -362,6 +362,7 @@ public class MainActivity extends BaseActivity implements
     }
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Override
   public void onPreferenceChanged() {
 
@@ -496,39 +497,41 @@ public class MainActivity extends BaseActivity implements
   private void generateTrends() {
 
     LogUtils.debug(TAG, "++generateTrends()");
-    Map<String, Object> mappedTrends = new HashMap<>();
-    Map<String, Long> goalsAgainstMap = new HashMap<>();
-    Map<String, Long> goalsForMap = new HashMap<>();
-    Map<String, Long> goalDifferentialMap = new HashMap<>();
-    Map<String, Long> totalPointsMap = new HashMap<>();
-    Map<String, Double> pointsPerGameMap = new HashMap<>();
-    Map<String, Long> maxPointsPossibleMap = new HashMap<>();
-    Map<String, Long> pointsByAverageMap = new HashMap<>();
 
     showProgressDialog(getString(R.string.generating_trends));
-    long goalsAgainst;
-    long goalDifferential;
-    long goalsFor;
-    long totalPoints;
-    long prevGoalAgainst = 0;
-    long prevGoalDifferential = 0;
-    long prevGoalFor = 0;
-    long prevTotalPoints = 0;
-    long totalMatches = 34;
-    long matchesRemaining = totalMatches;
-    if (mUserPreference == null || mUserPreference.Season == 0 || mUserPreference.TeamId.equals(BaseActivity.DEFAULT_ID)) {
-      LogUtils.error(TAG, "Missing user preferences; halting trend generation.");
-      Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.err_missing_preferences), Snackbar.LENGTH_LONG).show();
-    } else {
+
+    Map<String, Long> aggregateMap = new HashMap<>();
+    ArrayList<Team> teams = new ArrayList<>(mTeams);
+    for (Team team : teams) {
+      Map<String, Object> mappedTrends = new HashMap<>();
+      Map<String, Long> goalsAgainstMap = new HashMap<>();
+      Map<String, Long> goalsForMap = new HashMap<>();
+      Map<String, Long> goalDifferentialMap = new HashMap<>();
+      Map<String, Long> totalPointsMap = new HashMap<>();
+      Map<String, Double> pointsPerGameMap = new HashMap<>();
+      Map<String, Long> maxPointsPossibleMap = new HashMap<>();
+      Map<String, Long> pointsByAverageMap = new HashMap<>();
+
+      long goalsAgainst;
+      long goalDifferential;
+      long goalsFor;
+      long totalPoints;
+      long prevGoalAgainst = 0;
+      long prevGoalDifferential = 0;
+      long prevGoalFor = 0;
+      long prevTotalPoints = 0;
+      long totalMatches = 34;
+      long matchesRemaining = totalMatches;
       int matchDay = 0;
-      ArrayList<MatchSummary> temporary = new ArrayList<>(mSummaries);
-      Collections.reverse(temporary);
-      for (MatchSummary summary : temporary) {
+
+      ArrayList<MatchSummary> allSummaries = new ArrayList<>(mAllSummaries);
+      Collections.reverse(allSummaries);
+      for (MatchSummary summary : allSummaries) {
         if (!summary.IsFinal) {
           continue;
         }
 
-        if (summary.HomeId.equals(mUserPreference.TeamId)) { // targetTeam is the home team
+        if (summary.HomeId.equals(team.Id)) { // targetTeam is the home team
           goalsAgainst = summary.AwayScore;
           goalDifferential = summary.HomeScore - summary.AwayScore;
           goalsFor = summary.HomeScore;
@@ -539,7 +542,7 @@ public class MainActivity extends BaseActivity implements
           } else {
             totalPoints = (long) 1;
           }
-        } else if (summary.AwayId.equals(mUserPreference.TeamId)) { // targetTeam is the away team
+        } else if (summary.AwayId.equals(team.Id)) { // targetTeam is the away team
           goalsAgainst = summary.HomeScore;
           goalDifferential = summary.AwayScore - summary.HomeScore;
           goalsFor = summary.AwayScore;
@@ -550,8 +553,7 @@ public class MainActivity extends BaseActivity implements
           } else {
             totalPoints = (long) 1;
           }
-        } else {
-          LogUtils.warn(TAG, "%s is neither Home or Away; skipping.", mUserPreference.TeamId);
+        } else { // not a match where team.Id played
           continue;
         }
 
@@ -585,7 +587,7 @@ public class MainActivity extends BaseActivity implements
       mappedTrends.put("MaxPointsPossible", maxPointsPossibleMap);
       mappedTrends.put("PointsByAverage", pointsByAverageMap);
 
-      String queryPath = PathUtils.combine(Trend.ROOT, mUserPreference.Season, mUserPreference.TeamId);
+      String queryPath = PathUtils.combine(Trend.ROOT, mUserPreference.Season, team.Id);
       Map<String, Object> childUpdates = new HashMap<>();
       childUpdates.put(queryPath, mappedTrends);
       FirebaseDatabase.getInstance().getReference().updateChildren(
@@ -597,8 +599,24 @@ public class MainActivity extends BaseActivity implements
             Snackbar.make(findViewById(R.id.main_fragment_container), getString(R.string.err_trends_not_created), Snackbar.LENGTH_LONG).show();
           }
         });
+
+      // generate aggregated data for clients
+      aggregateMap.put(team.Id, prevTotalPoints);
     }
 
+    String queryPath = PathUtils.combine(Trend.AGGREGATE_ROOT, mUserPreference.Season);
+    Map<String, Object> childUpdates = new HashMap<>();
+    childUpdates.put(queryPath, aggregateMap);
+    FirebaseDatabase.getInstance().getReference().updateChildren(
+      childUpdates,
+      (databaseError, databaseReference) -> {
+
+        if (databaseError != null && databaseError.getCode() < 0) {
+          String error = getString(R.string.err_aggregate_not_created);
+          LogUtils.error(TAG, "%s: %s", error, databaseError.getMessage());
+          Snackbar.make(findViewById(R.id.main_fragment_container), error, Snackbar.LENGTH_LONG).show();
+        }
+      });
     hideProgressDialog();
   }
 
@@ -618,83 +636,6 @@ public class MainActivity extends BaseActivity implements
     return "N/A";
   }
 
-  private void loadTeamData() {
-
-    LogUtils.debug(TAG, "++loadTeamData()");
-    String parsableString;
-    HashMap<String, Team> localTeams = new HashMap<>();
-    String resourcePath = "Teams.txt";
-    BufferedReader reader = null;
-    try {
-      reader = new BufferedReader(new InputStreamReader(getAssets().open(resourcePath)));
-      while ((parsableString = reader.readLine()) != null) { //process line
-        if (parsableString.startsWith("--")) { // comment line; ignore
-          continue;
-        }
-
-        // [UUID],[FRIENDLY_NAME],[ABBREVIATION]
-        List<String> elements = new ArrayList<>(Arrays.asList(parsableString.split(";")));
-        Team team = new Team();
-        team.Id = elements.remove(0);
-        team.FullName = elements.remove(0);
-        team.ShortName = elements.remove(0);
-        localTeams.put(team.Id, team);
-      }
-    } catch (IOException e) {
-      String errorMessage = getString(R.string.err_team_data_load_failed);
-      LogUtils.error(TAG, errorMessage);
-      Snackbar.make(findViewById(R.id.main_fragment_container), errorMessage, Snackbar.LENGTH_LONG).show();
-    } finally {
-      if (reader != null) {
-        try {
-          reader.close();
-        } catch (IOException e) {
-          String errorMessage = getString(R.string.err_team_data_cleanup_failed);
-          LogUtils.error(TAG, errorMessage);
-          Snackbar.make(findViewById(R.id.main_fragment_container), errorMessage, Snackbar.LENGTH_LONG).show();
-        }
-      }
-    }
-
-    // when initially checking, we do not want to setup a listener that will fire if we need to add a new team
-    LogUtils.debug(TAG, "Query: %s", Team.ROOT);
-    Query teamsQuery = FirebaseDatabase.getInstance().getReference().child(Team.ROOT);
-    ValueEventListener teamsListener = new ValueEventListener() {
-      @Override
-      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-        mTeams = new ArrayList<>();
-        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-          Team team = snapshot.getValue(Team.class);
-          if (team != null) {
-            team.Id = snapshot.getKey();
-            mTeams.add(team);
-            if (localTeams.containsKey(team.Id)) {
-              localTeams.get(team.Id).IsNew = false;
-            }
-          }
-        }
-
-        checkTeamData(localTeams);
-        mTeams.sort(new SortUtils.ByTeamName());
-
-        // once teams are sorted out; move onto matches for user preferred season
-        mTeamsQuery.addValueEventListener(mTeamsListener);
-
-        // now process the match summaries
-        loadMatchSummaryData();
-      }
-
-      @Override
-      public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        LogUtils.debug(TAG, "++onCancelled(DatabaseError)");
-        LogUtils.error(TAG, "%s", databaseError.getDetails());
-      }
-    };
-    teamsQuery.addListenerForSingleValueEvent(teamsListener);
-  }
-
   private void loadMatchSummaryData() {
 
     LogUtils.debug(TAG, "++loadMatchSummaryData()");
@@ -710,7 +651,6 @@ public class MainActivity extends BaseActivity implements
         }
 
         // [DATE, DD.MM.YYYY];[HOMEID];[AWAYID];[HOMESCORE] : [AWAYSCORE]
-        System.out.println(String.format(Locale.ENGLISH, "Processing: %s", parsableString));
         List<String> elements = new ArrayList<>(Arrays.asList(parsableString.split(";")));
         String dateString = elements.remove(0);
         List<String> dateElements = new ArrayList<>(Arrays.asList(dateString.split("\\.")));
@@ -806,6 +746,86 @@ public class MainActivity extends BaseActivity implements
       }
     };
     matchSummariesQuery.addListenerForSingleValueEvent(matchSummariesListener);
+  }
+
+  private void loadTeamData() {
+
+    LogUtils.debug(TAG, "++loadTeamData()");
+    String parsableString;
+    HashMap<String, Team> localTeams = new HashMap<>();
+    String resourcePath = "Teams.txt";
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new InputStreamReader(getAssets().open(resourcePath)));
+      while ((parsableString = reader.readLine()) != null) { //process line
+        if (parsableString.startsWith("--")) { // comment line; ignore
+          continue;
+        }
+
+        // [UUID],[CONFERENCE_ID],[IS_DEFUNCT],[FRIENDLY_NAME],[ABBREVIATION]
+        List<String> elements = new ArrayList<>(Arrays.asList(parsableString.split(";")));
+        Team team = new Team();
+        team.Id = elements.remove(0);
+        team.ConferenceId = Integer.parseInt(elements.remove(0));
+        team.Established = Integer.parseInt(elements.remove(0));
+        team.Defunct = Integer.parseInt(elements.remove(0));
+        team.FullName = elements.remove(0);
+        team.ShortName = elements.remove(0);
+        localTeams.put(team.Id, team);
+      }
+    } catch (IOException e) {
+      String errorMessage = getString(R.string.err_team_data_load_failed);
+      LogUtils.error(TAG, errorMessage);
+      Snackbar.make(findViewById(R.id.main_fragment_container), errorMessage, Snackbar.LENGTH_LONG).show();
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          String errorMessage = getString(R.string.err_team_data_cleanup_failed);
+          LogUtils.error(TAG, errorMessage);
+          Snackbar.make(findViewById(R.id.main_fragment_container), errorMessage, Snackbar.LENGTH_LONG).show();
+        }
+      }
+    }
+
+    // when initially checking, we do not want to setup a listener that will fire if we need to add a new team
+    LogUtils.debug(TAG, "Query: %s", Team.ROOT);
+    Query teamsQuery = FirebaseDatabase.getInstance().getReference().child(Team.ROOT);
+    ValueEventListener teamsListener = new ValueEventListener() {
+      @Override
+      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+        mTeams = new ArrayList<>();
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+          Team team = snapshot.getValue(Team.class);
+          if (team != null) {
+            team.Id = snapshot.getKey();
+            mTeams.add(team);
+            if (localTeams.containsKey(team.Id)) {
+              localTeams.get(team.Id).IsNew = false;
+            }
+          }
+        }
+
+        checkTeamData(localTeams);
+        mTeams.sort(new SortUtils.ByTeamName());
+
+        // once teams are sorted out; move onto matches for user preferred season
+        mTeamsQuery.addValueEventListener(mTeamsListener);
+
+        // now process the match summaries
+        loadMatchSummaryData();
+      }
+
+      @Override
+      public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        LogUtils.debug(TAG, "++onCancelled(DatabaseError)");
+        LogUtils.error(TAG, "%s", databaseError.getDetails());
+      }
+    };
+    teamsQuery.addListenerForSingleValueEvent(teamsListener);
   }
 
   private void missingPreference() {

@@ -1,23 +1,23 @@
-dcf07e65-0570-4bbf-9eb4-743d1cd52e36;Atlanta United FC;ATL
-821e5563-bb3c-4a5e-8d56-79e25efb49cd;Chicago Fire;CHI
-f2a09e6a-0cfd-48b4-bc0d-f98c614809fd;Columbus Crew SC;CLB
-85f9cdc1-0d91-41bf-b37b-7d91c98c7e34;Colorado Rapids;COL
-028c0edc-b63e-4f72-8e4b-34d1a78e3671;FC Dallas;DAL
-34e2f043-ca34-4743-847b-17f2000c8e16;D.C. United;DC
-ee42400a-6bdf-4b68-ac30-437f50368b7e;Houston Dynamo;HOU
-c5a068cc-70cb-420d-ae6c-da7d8d6f96c7;LA Galaxy;LA
-f0b354a2-f8db-4b52-a180-f23816cbd6ac;Los Angeles Football Club;LAFC
-b1ab1613-d652-403f-8c7f-8ca7dfd37804;Minnesota United FC;MIN
-93eba939-30e6-4702-b854-87051111edbd;Montreal Impact;MON
-853ce6e8-987e-4cf0-846a-def18d96913a;New England Revolution;NE
-9df3a517-2754-438b-bfe3-9d081aefa350;New York Red Bulls;RBNY
-431c60bd-c4ae-4253-b554-58af9cf46dd3;New York City FC;NYC
-fd36043a-ce04-46e7-99ae-63406444834b;Orlando City SC;ORL
-2313ec02-1e1d-4fd1-8278-57ed5bc64370;Philadelphia Union;PHI
-f021bbaf-ea80-468a-8cd0-b3674327dee5;Portland Timbers;POR
-52f41053-5060-4535-9aca-03c0a6a41a82;Real Salt Lake;RSL
-07979bc9-ac85-47f7-9d98-d5275039d627;San Jose Earthquakes;SJ
-aa050628-4f65-4997-abef-e3fd6b80d07e;Seattle Sounders FC;SEA
-24f4602c-2a47-4bb3-9a5d-a801f61aeb05;Sporting Kansas City;SKC
-55f7f5fd-29d2-4a76-b497-5ca4baef5fa1;Toronto FC;TOR
-ce6a772c-9a31-4b10-81b1-f59ec6346b31;Vancouver Whitecaps FC;VAN
+dcf07e65-0570-4bbf-9eb4-743d1cd52e36;1;2017;0;Atlanta United FC;ATL
+821e5563-bb3c-4a5e-8d56-79e25efb49cd;1;1998;0;Chicago Fire;CHI
+f2a09e6a-0cfd-48b4-bc0d-f98c614809fd;1;1996;0;Columbus Crew SC;CLB
+85f9cdc1-0d91-41bf-b37b-7d91c98c7e34;2;1996;0;Colorado Rapids;COL
+34e2f043-ca34-4743-847b-17f2000c8e16;1;1996;0;D.C. United;DC
+028c0edc-b63e-4f72-8e4b-34d1a78e3671;1;1996;0;FC Dallas;DAL
+ee42400a-6bdf-4b68-ac30-437f50368b7e;2;2006;0;Houston Dynamo;HOU
+c5a068cc-70cb-420d-ae6c-da7d8d6f96c7;2;1996;0;LA Galaxy;LA
+f0b354a2-f8db-4b52-a180-f23816cbd6ac;2;2018;0;Los Angeles Football Club;LAFC
+b1ab1613-d652-403f-8c7f-8ca7dfd37804;2;2017;0;Minnesota United FC;MIN
+93eba939-30e6-4702-b854-87051111edbd;1;2012;0;Montreal Impact;MON
+853ce6e8-987e-4cf0-846a-def18d96913a;1;1996;0;New England Revolution;NE
+431c60bd-c4ae-4253-b554-58af9cf46dd3;1;2015;0;New York City FC;NYC
+9df3a517-2754-438b-bfe3-9d081aefa350;1;1996;0;New York Red Bulls;RBNY
+fd36043a-ce04-46e7-99ae-63406444834b;1;2015;0;Orlando City SC;ORL
+2313ec02-1e1d-4fd1-8278-57ed5bc64370;1;2010;0;Philadelphia Union;PHI
+f021bbaf-ea80-468a-8cd0-b3674327dee5;2;2011;0;Portland Timbers;POR
+52f41053-5060-4535-9aca-03c0a6a41a82;2;2005;0;Real Salt Lake;RSL
+07979bc9-ac85-47f7-9d98-d5275039d627;2;1996;0;San Jose Earthquakes;SJ
+aa050628-4f65-4997-abef-e3fd6b80d07e;2;2009;0;Seattle Sounders FC;SEA
+24f4602c-2a47-4bb3-9a5d-a801f61aeb05;2;1996;0;Sporting Kansas City;SKC
+55f7f5fd-29d2-4a76-b497-5ca4baef5fa1;1;2007;0;Toronto FC;TOR
+ce6a772c-9a31-4b10-81b1-f59ec6346b31;2;2011;0;Vancouver Whitecaps FC;VAN

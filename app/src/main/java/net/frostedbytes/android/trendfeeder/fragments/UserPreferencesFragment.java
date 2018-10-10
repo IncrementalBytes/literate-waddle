@@ -68,7 +68,7 @@ public class UserPreferencesFragment extends PreferenceFragmentCompat implements
     List<String> entries = new ArrayList<>();
     List<String> entryValues = new ArrayList<>();
     for (Team team : mTeams) {
-      entries.add(team.FullName);
+      entries.add(team.toString());
       entryValues.add(team.Id);
     }
 

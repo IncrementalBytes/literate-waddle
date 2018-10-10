@@ -145,7 +145,7 @@ public class CreateMatchFragment extends Fragment {
 
   private String getTeamId(String fullName) {
 
-    if (mTeams == null) {
+    if (mTeams == null || mTeams.size() == 0) {
       LogUtils.warn(TAG, "Team data is empty/null.");
       return BaseActivity.DEFAULT_ID;
     }
@@ -162,7 +162,7 @@ public class CreateMatchFragment extends Fragment {
 
   private String getTeamName(String teamId) {
 
-    if (mTeams == null) {
+    if (mTeams == null || mTeams.size() == 0) {
       LogUtils.warn(TAG, "Team data is empty/null.");
       return "N/A";
     }
@@ -181,7 +181,7 @@ public class CreateMatchFragment extends Fragment {
 
     List<String> teams = new ArrayList<>();
     for (Team team : mTeams) {
-      teams.add(team.FullName);
+      teams.add(team.toString());
     }
 
     Collections.sort(teams);

@@ -8,6 +8,9 @@ import java.util.Map;
 public class Trend implements Serializable {
 
   @Exclude
+  public static final String AGGREGATE_ROOT = "Aggregate";
+
+  @Exclude
   public static final String ROOT = "Trends";
 
   /**

@@ -25,7 +25,8 @@
     android:hint="@string/hint_score_home"
     android:textAlignment="center"
     app:layout_constraintStart_toEndOf="@+id/details_guideline"
-    app:layout_constraintTop_toTopOf="parent"/>
+    app:layout_constraintTop_toTopOf="parent"
+    android:importantForAutofill="no"/>
   <TextView
     android:id="@+id/details_text_away"
     android:textStyle="bold"
@@ -48,7 +49,8 @@
     android:hint="@string/hint_away_score"
     android:textAlignment="center"
     app:layout_constraintStart_toEndOf="@+id/details_guideline"
-    app:layout_constraintTop_toBottomOf="@id/details_edit_home_score"/>
+    app:layout_constraintTop_toBottomOf="@id/details_edit_home_score"
+    android:importantForAutofill="no"/>
   <CheckBox
     android:id="@+id/details_check_final"
     android:layout_width="wrap_content"
