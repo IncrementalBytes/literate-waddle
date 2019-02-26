@@ -7,13 +7,34 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdkVersion 27
-    defaultConfig {
-        applicationId "net.frostedbytes.android.trendfeeder"
-        minSdkVersion 26
-        targetSdkVersion 27
-        versionCode 9
-        versionName "1.009"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    def versionPropsFile = rootProject.file('version.properties')
+
+    if (versionPropsFile.canRead()) {
+        Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        def majorVersionProperty = versionProps['MAJOR_VERSION'].toInteger()
+        def minorVersionProperty = versionProps['MINOR_VERSION'].toInteger()
+        def versionCodeProperty = versionProps['VERSION_CODE'].toInteger()
+        def updatedBuildVersion = versionProps['BUILD_VERSION'].toInteger() + 1
+
+        versionProps['BUILD_VERSION']=updatedBuildVersion.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+
+        def updatedVersionName = majorVersionProperty + "." + minorVersionProperty + "." + versionCodeProperty + "." + updatedBuildVersion
+
+        defaultConfig {
+            applicationId "net.frostedbytes.android.trendfeeder"
+            minSdkVersion 26
+            targetSdkVersion 27
+            versionCode versionCodeProperty
+            versionName updatedVersionName
+            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        }
+    }
+    else {
+        throw new GradleException("Could not read version.properties!")
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all {

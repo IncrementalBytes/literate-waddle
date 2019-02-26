@@ -1,8 +1,10 @@
+-- [UUID],[CONFERENCE_ID],[IS_DEFUNCT],[FRIENDLY_NAME],[ABBREVIATION]
 dcf07e65-0570-4bbf-9eb4-743d1cd52e36;1;2017;0;Atlanta United FC;ATL
 821e5563-bb3c-4a5e-8d56-79e25efb49cd;1;1998;0;Chicago Fire;CHI
 f2a09e6a-0cfd-48b4-bc0d-f98c614809fd;1;1996;0;Columbus Crew SC;CLB
 85f9cdc1-0d91-41bf-b37b-7d91c98c7e34;2;1996;0;Colorado Rapids;COL
 34e2f043-ca34-4743-847b-17f2000c8e16;1;1996;0;D.C. United;DC
+4de09cc0-c8b5-4651-a73a-68e05ffacc22;1;2019;0;FC Cincinnati;FCC
 028c0edc-b63e-4f72-8e4b-34d1a78e3671;1;1996;0;FC Dallas;DAL
 ee42400a-6bdf-4b68-ac30-437f50368b7e;2;2006;0;Houston Dynamo;HOU
 c5a068cc-70cb-420d-ae6c-da7d8d6f96c7;2;1996;0;LA Galaxy;LA

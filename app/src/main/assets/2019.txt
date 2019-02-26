@@ -1,0 +1,5 @@
+--
+-- Gathered from https://www.scoreboard.com/en/mls/results/
+-- ';' separated
+-- [DATE, DD.MM.YYYY];[HOMEID];[AWAYID];[HOMESCORE] : [AWAYSCORE]
+--

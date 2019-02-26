@@ -3,9 +3,11 @@
   <string-array name="season_list_entries">
     <item>2017</item>
     <item>2018</item>
+    <item>2019</item>
   </string-array>
   <string-array name="season_list_values">
     <item>2017</item>
     <item>2018</item>
+    <item>2019</item>
   </string-array>
 </resources>
